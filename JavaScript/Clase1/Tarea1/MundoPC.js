@@ -71,10 +71,6 @@ class Monitor {
         this._tamaño = tamaño;
     }
 
-    get idMonitor(){
-        return this._idMonitor;
-    }
-
     get marca(){
         return this._marca;
     }
