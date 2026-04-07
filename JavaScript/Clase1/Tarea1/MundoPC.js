@@ -39,8 +39,8 @@ class Raton extends DispositivoEntrada {
 
 let raton1 = new Raton('USB', 'HyperX');
 let raton2 = new Raton('PS2', 'Genius');
-console.log(raton1);
-console.log(raton2);
+console.log(raton1.toString());
+console.log(raton2.toString());
 
 class Teclado extends DispositivoEntrada{
     static contadorTeclado = 0;
@@ -59,8 +59,8 @@ class Teclado extends DispositivoEntrada{
 
 let teclado1 = new Teclado('Bluetooth', 'Logitec');
 let teclado2 = new Teclado('USB', 'HP');
-console.log(teclado1);
-console.log(teclado2);
+console.log(teclado1.toString());
+console.log(teclado2.toString());
 
 class Monitor {
     static contadorMonitores = 0;
@@ -98,6 +98,7 @@ class Monitor {
 
 let monitor1 = new Monitor('Samsung', '24 pulgadas');
 let monitor2 = new Monitor('LG', '27 pulgadas');
-
+console.log(monitor1.toString());
+console.log(monitor2.toString());
 console.log(monitor1.toString());
 console.log(monitor2.toString());
