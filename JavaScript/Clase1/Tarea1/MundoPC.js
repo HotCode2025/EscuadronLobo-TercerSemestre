@@ -138,4 +138,15 @@ class Orden {
 
         console.log(`Orden: ${this._idOrden} ${computadorasStr}`);
     }
+  let orden1 = new Orden();
+  orden1.agregarComputadora(computadora1);
+  orden1.agregarComputadora(computadora2);
+  orden1.agregarComputadora(computadora2);
+  orden1.mostrarOrden();
+
+  let orden2 = new Orden();
+  orden2.agregarComputadora(computadora1);
+  orden2.agregarComputadora(computadora1);
+  orden2.agregarComputadora(computadora2);
+  orden2.mostrarOrden();
 }
