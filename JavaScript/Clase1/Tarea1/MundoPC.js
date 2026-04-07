@@ -100,4 +100,3 @@ let monitor1 = new Monitor('Samsung', '24 pulgadas');
 let monitor2 = new Monitor('LG', '27 pulgadas');
 console.log(monitor1.toString());
 console.log(monitor2.toString());
-console.log(monitor2.toString());
