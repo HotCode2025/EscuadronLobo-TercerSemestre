@@ -116,3 +116,26 @@ let computadora1 = new Computadoras ('PC GAMER', monitor1, raton1, teclado1);
 let computadora2 = new Computadoras ('ACER', monitor2, raton2, teclado2);
 console.log(computadora1.toString());
 console.log(computadora2.toString());
+
+class Orden {
+    static contadorOrdenes = 0;
+
+    constructor(){
+        this._idOrden = ++Orden.contadorOrdenes;
+        this._computadoras = [];
+    }
+
+    agregarComputadora(computadora){
+        this._computadoras.push(computadora);
+    }
+
+    mostrarOrden(){
+        let computadorasStr = '';
+
+        for(let computadora of this._computadoras){
+            computadorasStr += '\n' + computadora.toString();
+        }
+
+        console.log(`Orden: ${this._idOrden} ${computadorasStr}`);
+    }
+}
