@@ -96,3 +96,23 @@ let monitor1 = new Monitor('Samsung', '24 pulgadas');
 let monitor2 = new Monitor('LG', '27 pulgadas');
 console.log(monitor1.toString());
 console.log(monitor2.toString());
+
+class Computadoras{
+    static contadorComputadoras = 0;
+
+    constructor(nombre, monitor, teclado, raton){
+        this._idComputadora = ++Computadoras.contadorComputadoras;
+        this._nombre = nombre;
+        this._monitor = monitor;
+        this._teclado = teclado;
+        this._raton = raton;
+    }
+    toString(){
+        return `Computadora ${this._idComputadora}: ${this._nombre}\n ${this._monitor}\n ${this._raton}\n ${this._teclado}`
+    }
+}
+
+let computadora1 = new Computadoras ('PC GAMER', monitor1, raton1, teclado1);
+let computadora2 = new Computadoras ('ACER', monitor2, raton2, teclado2);
+console.log(computadora1.toString());
+console.log(computadora2.toString());
