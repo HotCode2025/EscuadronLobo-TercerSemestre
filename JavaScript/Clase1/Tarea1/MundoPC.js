@@ -1,3 +1,4 @@
+//creamos clase DispositivoEntrada
 class DispositivoEntrada {
     constructor(tipoEntrada, marca){
         this._tipoEntrada = tipoEntrada;
@@ -21,6 +22,7 @@ class DispositivoEntrada {
     }
 }
 
+//creamos clase Raton
 class Raton extends DispositivoEntrada {
     static contadorRatones = 0;
 
@@ -32,16 +34,20 @@ class Raton extends DispositivoEntrada {
     get idRaton(){
         return this._idRaton;
     }
+    //devolvemos en un string los valores que recibimos
     toString(){
         return `Raton: [idRaton: ${this._idRaton}, tipoEntrada: ${this._tipoEntrada}, Marca: ${this._marca}]`;
     }
 }
 
+//creamos ratones
 let raton1 = new Raton('USB', 'HyperX');
 let raton2 = new Raton('PS2', 'Genius');
+//mostramos en consola
 console.log(raton1.toString());
 console.log(raton2.toString());
 
+//creamos la clase teclado
 class Teclado extends DispositivoEntrada{
     static contadorTeclado = 0;
 
@@ -52,16 +58,20 @@ class Teclado extends DispositivoEntrada{
     get idTeclado(){
         return this._idTeclado;
     }
+    //devolvemos en un string los valores que recibimos
     toString(){
         return `Teclado: [idTeclado: ${this._idTeclado}, tipoEntrada: ${this._tipoEntrada}, Marca: ${this._marca}]`;
     }
 }
 
+//creamos los teclados
 let teclado1 = new Teclado('Bluetooth', 'Logitec');
 let teclado2 = new Teclado('USB', 'HP');
+//mostramos en consola
 console.log(teclado1.toString());
 console.log(teclado2.toString());
 
+//creamos clase Monitor
 class Monitor {
     static contadorMonitores = 0;
 
@@ -92,11 +102,14 @@ class Monitor {
     }
 }
 
+//creamos Monitores
 let monitor1 = new Monitor('Samsung', '24 pulgadas');
 let monitor2 = new Monitor('LG', '27 pulgadas');
+//mostramos en consola
 console.log(monitor1.toString());
 console.log(monitor2.toString());
 
+//creamos la clase Computadoras
 class Computadoras{
     static contadorComputadoras = 0;
 
@@ -112,11 +125,14 @@ class Computadoras{
     }
 }
 
+//creamos las computadoras y asignamos un monitor, un teclado y un raton a cada una
 let computadora1 = new Computadoras ('PC GAMER', monitor1, raton1, teclado1);
 let computadora2 = new Computadoras ('ACER', monitor2, raton2, teclado2);
+//mostramos en consola
 console.log(computadora1.toString());
 console.log(computadora2.toString());
 
+//creamos la clase Orden
 class Orden {
     static contadorOrdenes = 0;
 
@@ -124,14 +140,14 @@ class Orden {
         this._idOrden = ++Orden.contadorOrdenes;
         this._computadoras = [];
     }
-
+    
     agregarComputadora(computadora){
         this._computadoras.push(computadora);
     }
 
     mostrarOrden(){
         let computadorasStr = '';
-
+        //agregamos computadoras a la orden
         for(let computadora of this._computadoras){
             computadorasStr += '\n' + computadora.toString();
         }
@@ -139,14 +155,14 @@ class Orden {
         console.log(`Orden: ${this._idOrden} ${computadorasStr}`);
     }  
 }
+
+//creamos las ordenes, agregamos computadoras y mostramos la orden
 let orden1 = new Orden();
 orden1.agregarComputadora(computadora1);
-orden1.agregarComputadora(computadora2);
 orden1.agregarComputadora(computadora2);
 orden1.mostrarOrden();
 
 let orden2 = new Orden();
-orden2.agregarComputadora(computadora1);
 orden2.agregarComputadora(computadora1);
 orden2.agregarComputadora(computadora2);
 orden2.mostrarOrden();
