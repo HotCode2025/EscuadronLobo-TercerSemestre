@@ -107,7 +107,7 @@ class Computadoras{
         this._teclado = teclado;
         this._raton = raton;
     }
-    
+    //APLICAMOS POLIMORFISMO
     toString(){
         return `Computadora ${this._idComputadora}: ${this._nombre}
         ${this._monitor.toString()}
