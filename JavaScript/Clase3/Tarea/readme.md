@@ -1,0 +1,3 @@
+En este programa el polimorfismo se aplica mediante el método toString(), que es redefinido en las clases Raton, Teclado, Monitor y Computadoras.
+La clase Orden no necesita conocer los detalles internos de cada objeto, ya que al recorrer las computadoras y mostrarlas, JavaScript invoca automáticamente el método toString() correspondiente a cada objeto.
+Esto permite que distintos objetos respondan al mismo método de forma diferente, lo cual es un ejemplo claro de polimorfismo.
