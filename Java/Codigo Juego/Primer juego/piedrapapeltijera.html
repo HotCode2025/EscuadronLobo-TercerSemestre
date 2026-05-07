@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Piedra papel o tijera</title>
+    <script>
+    //1 sera piedra, 2 sera papel y 3 tijera
+    let jugador = 0 //Guarda la eleccion del jugador
+    let max = 3   //Numero maximo posible(3 = tijera)
+    let min = 1   //Numero minimo posible(1 = piedra)
+
+    // Función para generar número aleatorio para la PC
+    // Genera un número al azar entre min y max
+    // Sirve para cualquier rango, solo cambiando min y max arriba
+    function numeroAleatorio(min, max) {
+        return Math.floor(Math.random() * (max - min + 1) + min)
+    }
+    let pc = numeroAleatorio(min, max)//La pc elige su numero aleatorio
+
+
+    // ── ELECCIÓN DEL JUGADOR ───────────────────────────────
+    jugador = prompt("Elige : 1 piedra, 2 papel, 3 tijera")//le pregunta al jugador
+
+    //alert("Elige jugador"+jugador)
+    if(jugador == 1){
+        alert("Elegiste piedra")
+    } else if(jugador == 2){
+        alert("Elegiste papel")
+    } else if(jugador == 3){
+        alert("Elegiste tijera")
+    } else{
+        alert("Elegiste perder") // Si escribe otro numero que no sea 1,2,3 pierde
+    } 
+
+
+    //Combate
+    // Compara la elección del jugador con la de la PC
+    if(pc == jugador){
+        alert("EMPATE")    // Ambos eligieron lo mismo
+    } else if(jugador == 1 && pc == 3){
+        alert("GANASTE")   // Piedra vence a tijera
+    } else if(jugador == 2 && pc == 1){
+        alert("GANASTE")   // Papel vence a piedra
+    } else if(jugador == 3 && pc == 2){
+        alert("GANASTE")   // Tijera vence a papel
+    } else{
+        alert("PERDISTE")  // Cualquier otro caso, gana la PC
+    }
+
+
+    </script>
+</head>
+
+
+
+<body>
+    <h1>Piedra, Papel o Tijera</h1>
+</body>
+</html>
