@@ -1,0 +1,439 @@
+/*
+  ============================================================
+  RELOJ DIGITAL INTERACTIVO — HOJA DE ESTILOS
+  ============================================================
+  Archivo     : reloj.css
+  Versión     : 1.0
+  Descripción : Estilos, animaciones y temas de color para el
+                reloj digital interactivo definido en reloj.html.
+
+  Tabla de contenidos:
+    1.  Importación de tipografías    (Google Fonts)
+    2.  Reset y caja universal        (* y box-sizing)
+    3.  Cuerpo del documento          (body)
+    4.  Contenedor exterior           (.clock-shell)
+    5.  Tarjeta principal             (.clock-card)
+        5.1  Línea de luz animada     (.clock-card::before)
+        5.2  Animación scanline       (@keyframes scanline)
+    6.  Etiqueta de título            (.clock-label)
+    7.  Display de dígitos            (.clock-digits)
+        7.1  Estado pausado           (.clock-digits.paused)
+    8.  Parpadeo de los dos puntos    (.colon-blink)
+        8.1  Animación blink          (@keyframes blink)
+    9.  Fila de fecha                 (.date-row)
+    10.  Línea divisora                (.divider)
+    11.  Botones de control            (.controls / .btn)
+        11.1  Hover                   (.btn:hover)
+        11.2  Estado activo           (.btn.active)
+    12.  Selector de zona horaria      (.timezone-row / .tz-btn)
+        12.1  Hover                   (.tz-btn:hover)
+        12.2  Zona activa             (.tz-btn.active)
+    13.  Indicador de estado           (.status-row)
+    14.  Punto pulsante                (.dot)
+        14.1  Estado pausado          (.dot.paused)
+        14.2  Animación pulse         (@keyframes pulse)
+
+  Tipografías utilizadas:
+    — Share Tech Mono : dígitos del reloj (monoespaciada, sci-fi)
+    — Rajdhani        : texto UI, botones y etiquetas (sans-serif)
+
+  Paleta de colores principal:
+    — Fondo página    : #060910  (negro azulado profundo)
+    — Fondo tarjeta   : #0a0e1a  (azul muy oscuro)
+    — Borde tarjeta   : #1e2a45  (azul grisáceo)
+    — Acento cian     : #00e5ff  (color principal del reloj)
+    — Acento violeta  : #7c3aed  (estado pausado)
+    — Texto secundario: #5a7090  (fecha, estado)
+  ============================================================
+*/
+
+
+/* ============================================================
+  1.  IMPORTACIÓN DE TIPOGRAFÍAS
+  Se cargan desde Google Fonts al inicio para garantizar que
+  estén disponibles antes de renderizar cualquier elemento.
+    — Share Tech Mono : fuente monoespaciada de estética digital
+    — Rajdhani 300/400/600 : fuente geométrica para la UI
+============================================================ */
+@import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Rajdhani:wght@300;400;600&display=swap');
+
+
+/* ============================================================
+  2.  RESET Y CAJA UNIVERSAL
+  Elimina márgenes y rellenos predeterminados del navegador.
+  box-sizing: border-box incluye padding y borde en el ancho
+  y alto de todos los elementos, evitando desbordamientos.
+============================================================ */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+
+/* ============================================================
+  3.  CUERPO DEL DOCUMENTO
+  Ocupa toda la ventana del navegador (100vh) y centra su
+  contenido con Flexbox. El fondo negro azulado crea el
+  ambiente oscuro necesario para la estética del reloj.
+============================================================ */
+body {
+  min-height: 100vh;           /* Altura mínima igual a la ventana */
+  display: flex;
+  align-items: center;         /* Centrado vertical */
+  justify-content: center;     /* Centrado horizontal */
+  background: #060910;         /* Negro azulado profundo */
+  font-family: 'Rajdhani', sans-serif; /* Fuente base para toda la UI */
+}
+
+
+/* ============================================================
+  4.  CONTENEDOR EXTERIOR  (.clock-shell)
+  Capa intermedia de Flexbox que añade padding lateral para
+  que la tarjeta no llegue a los bordes en pantallas pequeñas.
+============================================================ */
+.clock-shell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 1rem;
+}
+
+
+/* ============================================================
+  5.  TARJETA PRINCIPAL  (.clock-card)
+  Panel central que contiene todos los elementos del reloj.
+  El ancho máximo de 600px mantiene la legibilidad en
+  pantallas anchas. overflow: hidden es necesario para que
+  la línea de luz del ::before no se desborde visualmente.
+============================================================ */
+.clock-card {
+  width: 100%;
+  max-width: 600px;
+  background: #0a0e1a;         /* Azul muy oscuro, diferenciado del fondo */
+  border-radius: 20px;         /* Esquinas redondeadas */
+  padding: 3rem 2.5rem 2.5rem; /* Espaciado interior generoso */
+  text-align: center;
+  border: 1px solid #1e2a45;   /* Borde sutil azul grisáceo */
+  position: relative;          /* Necesario para posicionar el ::before */
+  overflow: hidden;            /* Oculta la línea de luz fuera de la tarjeta */
+}
+
+
+/* ============================================================
+  5.1  LÍNEA DE LUZ ANIMADA  (.clock-card::before)
+  Pseudo-elemento que dibuja una franja de 2px en la parte
+  superior de la tarjeta. Usa un degradado de izquierda a
+  derecha que va de transparente → cian → violeta → cian →
+  transparente, creando el efecto de una barra de energía.
+============================================================ */
+.clock-card::before {
+  content: '';                 /* Obligatorio para que el pseudo-elemento exista */
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #00e5ff,                   /* Cian — acento principal */
+    #7c3aed,                   /* Violeta — acento secundario */
+    #00e5ff,
+    transparent
+  );
+  animation: scanline 3s linear infinite;
+}
+
+
+/* ============================================================
+  5.2  ANIMACIÓN SCANLINE  (@keyframes scanline)
+  Pulsa la opacidad de la línea de luz entre 0.4 y 1 para
+  simular una lectura de energía variable o un sensor activo.
+============================================================ */
+@keyframes scanline {
+  0%   { opacity: 0.4; }
+  50%  { opacity: 1;   }
+  100% { opacity: 0.4; }
+}
+
+
+/* ============================================================
+  6.  ETIQUETA DE TÍTULO  (.clock-label)
+  Texto pequeño con espaciado de letras amplio que actúa como
+  encabezado descriptivo del panel. El color tenue lo mantiene
+  como elemento decorativo sin competir con los dígitos.
+============================================================ */
+.clock-label {
+  font-size: 11px;
+  letter-spacing: 4px;         /* Espaciado amplio: efecto etiqueta técnica */
+  color: #5a6a8a;              /* Gris azulado tenue */
+  text-transform: uppercase;
+  margin-bottom: 2rem;
+  font-weight: 400;
+}
+
+
+/* ============================================================
+  7.  DISPLAY DE DÍGITOS  (.clock-digits)
+  Bloque principal del reloj. Usa Share Tech Mono para dar
+  el aspecto de pantalla digital. clamp() escala el tamaño
+  de fuente de forma fluida entre 56px y 82px según el ancho
+  de la ventana, garantizando que los dígitos quepan siempre
+  en una sola línea sin desbordarse.
+============================================================ */
+.clock-digits {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(56px, 13vw, 82px); /* Responsivo: mín 56px, preferido 13vw, máx 82px */
+  color: #00e5ff;              /* Cian luminoso */
+  letter-spacing: 0px;        /* Sin espacio extra para evitar separación excesiva */
+  line-height: 1;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 0 30px rgba(0, 229, 255, 0.4); /* Halo de luz difusa alrededor */
+  transition: color 0.3s;      /* Transición suave al cambiar al estado pausado */
+  cursor: pointer;             /* Indica que es clickeable para pausar */
+  user-select: none;           /* Evita que el texto sea seleccionable accidentalmente */
+  white-space: nowrap;         /* Impide el salto de línea entre dígitos */
+}
+
+
+/* ============================================================
+  7.1  ESTADO PAUSADO  (.clock-digits.paused)
+  Cuando el reloj está pausado, los dígitos cambian de cian
+  a violeta para indicar visualmente el estado detenido.
+  La transición heredada de .clock-digits suaviza el cambio.
+============================================================ */
+.clock-digits.paused {
+  color: #7c3aed;              /* Violeta — estado de pausa */
+  text-shadow: 0 0 30px rgba(124, 58, 237, 0.4); /* Halo violeta */
+}
+
+
+/* ============================================================
+  8.  PARPADEO DE LOS DOS PUNTOS  (.colon-blink)
+  Los separadores ":" parpadean al ritmo de step-start, que
+  produce un cambio brusco (encendido/apagado) en lugar de
+  una transición suave, imitando el comportamiento de los
+  relojes digitales físicos.
+============================================================ */
+.colon-blink {
+  animation: blink 1s step-start infinite;
+}
+
+
+/* ============================================================
+  8.1  ANIMACIÓN BLINK  (@keyframes blink)
+  A mitad del ciclo, la opacidad cae a 0.2 (casi invisible)
+  para crear el efecto de parpadeo característico del reloj.
+============================================================ */
+@keyframes blink {
+  0%, 100% { opacity: 1;   } /* Visible */
+  50%      { opacity: 0.2; } /* Casi invisible */
+}
+
+
+/* ============================================================
+  9.  FILA DE FECHA  (.date-row)
+  Muestra el día de la semana, número, mes y año debajo de
+  los dígitos. El color tenue y el espaciado moderado
+  lo presentan como información secundaria complementaria.
+============================================================ */
+.date-row {
+  font-size: 15px;
+  color: #5a7090;              /* Azul grisáceo — texto secundario */
+  letter-spacing: 1.5px;
+  margin-top: 1.5rem;
+  font-weight: 400;
+  text-transform: capitalize;  /* Primera letra de cada palabra en mayúscula */
+}
+
+
+/* ============================================================
+  10.  LÍNEA DIVISORA  (.divider)
+  Elemento visual decorativo que separa la sección de tiempo
+  y fecha de los controles interactivos. Su ancho reducido
+  (40px) lo convierte en un acento gráfico sutil.
+============================================================ */
+.divider {
+  width: 40px;
+  height: 1px;
+  background: #1e2a45;         /* Mismo color que el borde de la tarjeta */
+  margin: 1.5rem auto 0;       /* Centrado con margen superior */
+}
+
+
+/* ============================================================
+  11.  BOTONES DE CONTROL  (.controls / .btn)
+  Contenedor flex para los tres botones principales. Los
+  botones tienen fondo oscuro, borde azul y texto celeste
+  que los hace visibles sin robar protagonismo al reloj.
+  flex-wrap permite que se reorganicen en pantallas pequeñas.
+============================================================ */
+.controls {
+  display: flex;
+  justify-content: center;
+  gap: 10px;                   /* Separación entre botones */
+  margin-top: 1.8rem;
+  flex-wrap: wrap;             /* Los botones pasan a la siguiente línea si es necesario */
+}
+
+.btn {
+  background: #152030;         /* Azul marino oscuro, más claro que el fondo */
+  border: 1px solid #2e4060;   /* Borde azul acero visible */
+  color: #7ab0d8;              /* Celeste claro: texto legible */
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 12px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  padding: 9px 20px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;        /* Transición suave en hover y focus */
+  font-weight: 600;
+}
+
+
+/* ============================================================
+  11.1  HOVER DE BOTONES  (.btn:hover)
+  Al pasar el cursor, el borde y el texto cambian a cian
+  brillante y el fondo se aclara levemente, dando retroalimentación
+  visual clara de la interacción disponible.
+============================================================ */
+.btn:hover {
+  background: #1c2e48;
+  border-color: #00e5ff;       /* Borde cian al hacer hover */
+  color: #00e5ff;              /* Texto cian al hacer hover */
+}
+
+
+/* ============================================================
+  11.2  ESTADO ACTIVO DE BOTONES  (.btn.active)
+  Se aplica cuando una opción está activada (12h encendido,
+  reloj pausado, segundos ocultos). Usa violeta como color
+  de acento para diferenciar el estado activo del hover.
+============================================================ */
+.btn.active {
+  background: #1a1030;         /* Fondo violeta muy oscuro */
+  border-color: #7c3aed;       /* Borde violeta */
+  color: #a78bfa;              /* Texto violeta claro */
+}
+
+
+/* ============================================================
+  12.  SELECTOR DE ZONA HORARIA  (.timezone-row / .tz-btn)
+  Fila de botones más pequeños para cambiar la zona horaria.
+  Son visualmente más discretos que los controles principales
+  mediante un tamaño de fuente y padding reducidos.
+============================================================ */
+.timezone-row {
+  margin-top: 1.4rem;
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.tz-btn {
+  background: #111828;         /* Fondo ligeramente más claro que la tarjeta */
+  border: 1px solid #253550;   /* Borde azul muy sutil */
+  color: #5a7a9a;              /* Gris azulado: texto discreto */
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  padding: 6px 14px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 600;
+}
+
+
+/* ============================================================
+  12.1  HOVER DE BOTONES TZ  (.tz-btn:hover)
+  El borde y el texto se aclaran al pasar el cursor, sin
+  llegar al brillo cian de los controles principales para
+  mantener la jerarquía visual entre los dos grupos.
+============================================================ */
+.tz-btn:hover {
+  border-color: #5a8aaa;
+  color: #8ab8d8;
+  background: #162030;
+}
+
+
+/* ============================================================
+  12.2  ZONA HORARIA ACTIVA  (.tz-btn.active)
+  La zona seleccionada actualmente se resalta con borde y
+  texto cian, igual al acento principal del reloj, indicando
+  claramente cuál está en uso.
+============================================================ */
+.tz-btn.active {
+  border-color: #00e5ff;       /* Borde cian: zona activa */
+  color: #00e5ff;              /* Texto cian */
+  background: #0d1e2e;         /* Fondo azul oscuro diferenciado */
+}
+
+
+/* ============================================================
+  13.  INDICADOR DE ESTADO  (.status-row)
+  Fila inferior con el punto pulsante y el texto descriptivo.
+  El tamaño y color pequeños lo hacen un elemento informativo
+  sin distraer del display principal.
+============================================================ */
+.status-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 1.5rem;
+  font-size: 11px;
+  letter-spacing: 3px;
+  color: #3a5070;              /* Gris azulado muy tenue */
+  text-transform: uppercase;
+}
+
+
+/* ============================================================
+  14.  PUNTO PULSANTE  (.dot)
+  Pequeño círculo que pulsa rítmicamente para indicar que
+  el reloj está activo y actualizándose en tiempo real.
+  Su tamaño compacto lo integra naturalmente en la fila
+  de estado sin llamar demasiado la atención.
+============================================================ */
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;          /* Forma circular perfecta */
+  background: #00e5ff;         /* Cian: estado activo */
+  animation: pulse 2s ease-in-out infinite;
+}
+
+
+/* ============================================================
+  14.1  PUNTO EN PAUSA  (.dot.paused)
+  Al pausar el reloj, el punto cambia a violeta y detiene
+  su animación, reforzando visualmente el estado detenido.
+============================================================ */
+.dot.paused {
+  background: #7c3aed;         /* Violeta: estado pausado */
+  animation: none;             /* Sin pulso cuando está en pausa */
+}
+
+
+/* ============================================================
+  14.2  ANIMACIÓN PULSE  (@keyframes pulse)
+  El punto oscila entre su tamaño original y uno más pequeño,
+  desapareciendo parcialmente en el punto medio del ciclo
+  para imitar el latido de un indicador de actividad.
+============================================================ */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);    /* Tamaño original */
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(0.7);  /* Reducido al 70% en el medio del ciclo */
+  }
+}
