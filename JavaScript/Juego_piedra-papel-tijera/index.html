@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<!--
+  ╔══════════════════════════════════════════════════════════════════════╗
+  ║         PIEDRA · PAPEL · TIJERA — Versión Infantil Animada          ║
+  ║                                                                      ║
+  ║  Estructura del proyecto:                                            ║
+  ║    index.html  → Estructura HTML visible del juego                  ║
+  ║    style.css   → Todos los estilos visuales y animaciones           ║
+  ║    script.js   → Lógica del juego en JavaScript                     ║
+  ╚══════════════════════════════════════════════════════════════════════╝
+-->
+<html lang="es">
+
+<!-- ══════════════════════════════════════════════════════════════════════
+    SECCIÓN HEAD
+    Contiene metadatos, título de la pestaña y enlaces a archivos externos.
+    El usuario NO ve esta sección directamente; es configuración interna.
+    ══════════════════════════════════════════════════════════════════════ -->
+<head>
+  <meta charset="UTF-8">
+  <!-- Permite mostrar caracteres especiales: ñ, tildes, emojis, etc. -->
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Hace que la página se adapte bien a celulares y tablets -->
+
+  <title>🪨 Piedra · Papel · Tijera 🎮</title>
+
+  <!-- Fuentes de Google Fonts (se cargan desde internet) -->
+  <!-- Fredoka One → fuente redondeada y amigable, ideal para niños     -->
+  <!-- Nunito      → fuente legible y suave para textos secundarios      -->
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- Enlace al archivo de estilos externo (style.css) -->
+  <!-- rel="stylesheet" le dice al navegador que es un archivo CSS       -->
+  <link rel="stylesheet" href="style.css">
+</head>
+
+<!-- ══════════════════════════════════════════════════════════════════════
+    SECCIÓN BODY
+    Contiene todo el HTML visible: la estructura del juego.
+    Cada sección está identificada con un ID único para que JavaScript
+    pueda encontrarla y modificarla dinámicamente.
+    ══════════════════════════════════════════════════════════════════════ -->
+<body>
+
+  <!-- Elemento decorativo: nube adicional que cruza la pantalla         -->
+  <div class="cloud-extra">☁️</div>
+
+  <!-- Elemento decorativo: pájaros que vuelan de derecha a izquierda   -->
+  <div class="birds">🐦 🐦</div>
+
+  <!-- Elemento decorativo: césped con flores en la parte inferior      -->
+  <div class="grass-bg"></div>
+
+  <!-- ── CONTENEDOR PRINCIPAL DEL JUEGO ──────────────────────────────
+      Todo el contenido del juego va dentro de este div.
+      Limita el ancho máximo y centra el contenido.
+      ── -->
+  <div class="container">
+
+    <!-- ENCABEZADO: título y subtítulo -->
+    <header>
+      <h1>🪨 Piedra · Papel · Tijera ✂️</h1>
+      <p>⭐ ¿Podés vencer a la computadora? ⭐</p>
+    </header>
+
+    <!-- ── MARCADOR DE PUNTOS ──────────────────────────────────────────
+        Muestra victorias, empates y derrotas acumuladas.
+        Los span con id="score-*" son actualizados por JavaScript.
+        ── -->
+    <div class="scoreboard panel">
+
+      <!-- Bloque: Victorias -->
+      <div class="score-block wins">
+        <span class="label">🏆 Victorias</span>
+        <!-- id="score-wins": JavaScript cambia este número al ganar -->
+        <span class="number" id="score-wins">0</span>
+      </div>
+
+      <div class="score-divider"></div>
+
+      <!-- Bloque: Empates -->
+      <div class="score-block draws">
+        <span class="label">🤝 Empates</span>
+        <span class="number" id="score-draws">0</span>
+      </div>
+
+      <div class="score-divider"></div>
+
+      <!-- Bloque: Derrotas -->
+      <div class="score-block loses">
+        <span class="label">💀 Derrotas</span>
+        <span class="number" id="score-loses">0</span>
+      </div>
+
+    </div>
+
+    <!-- ── ARENA DE COMBATE ─────────────────────────────────────────────
+        Zona donde se muestran los emojis del jugador y la PC.
+        id="arena": JavaScript cambia el borde según el resultado.
+        ── -->
+    <div class="arena panel" id="arena">
+
+      <!-- Fila con los dos "luchadores" y el VS en el medio -->
+      <div class="arena-row">
+
+        <!-- Luchador izquierdo: el jugador humano -->
+        <div class="fighter left">
+          <span class="name">Vos 🙋</span>
+          <!-- id="player-emoji": JavaScript pone aquí el emoji elegido -->
+          <span class="emoji" id="player-emoji">🤜</span>
+          <!-- id="player-label": muestra el nombre de la elección -->
+          <span class="choice-label" id="player-label">—</span>
+        </div>
+
+        <span class="vs-badge">VS</span>
+
+        <!-- Luchador derecho: la computadora (PC) -->
+        <div class="fighter right">
+          <span class="name">🤖 PC</span>
+          <span class="emoji" id="pc-emoji">🤛</span>
+          <span class="choice-label" id="pc-label">—</span>
+        </div>
+
+      </div>
+
+      <!-- Texto grande con el resultado: "¡GANASTE!", "PERDISTE", "EMPATE" -->
+      <div class="result-text" id="result-text">¡Elegí tu jugada!</div>
+
+      <!-- Frase secundaria aleatoria según el resultado -->
+      <div class="result-detail" id="result-detail">¡La batalla comienza ahora! 🎮</div>
+
+    </div>
+
+    <!-- ── BOTONES DE ELECCIÓN ──────────────────────────────────────────
+        Tres botones: uno por cada opción (Piedra, Papel, Tijera).
+        onclick="play(N)": llama a la función play() con el número
+        correspondiente cuando el usuario hace click.
+        data-choice="N": dato extra usado por CSS para asignar colores.
+        ── -->
+    <div class="choices">
+
+      <!-- Botón Piedra → envía el valor 1 a la función play() -->
+      <button class="choice-btn" data-choice="1" onclick="play(1)">
+        <span class="btn-emoji">🪨</span>
+        <span>Piedra</span>
+      </button>
+
+      <!-- Botón Papel → envía el valor 2 a la función play() -->
+      <button class="choice-btn" data-choice="2" onclick="play(2)">
+        <span class="btn-emoji">📄</span>
+        <span>Papel</span>
+      </button>
+
+      <!-- Botón Tijera → envía el valor 3 a la función play() -->
+      <button class="choice-btn" data-choice="3" onclick="play(3)">
+        <span class="btn-emoji">✂️</span>
+        <span>Tijera</span>
+      </button>
+
+    </div>
+
+    <!-- ── BOTÓN REINICIAR ──────────────────────────────────────────────
+        Llama a la función resetGame() que borra todos los puntajes
+        y deja el juego como al principio.
+        ── -->
+    <button class="reset-btn" onclick="resetGame()">
+      <!-- Ícono SVG de flecha circular (dibujado en código, no imagen)  -->
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+          stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+        <path d="M3 3v5h5"/>
+      </svg>
+      Reiniciar partida
+    </button>
+
+    <!-- ── HISTORIAL DE RONDAS ─────────────────────────────────────────
+        Se muestra solo cuando se juega al menos una ronda.
+        style="display:none": oculto al inicio, JavaScript lo muestra.
+        id="history-list": JavaScript inserta aquí las filas del historial.
+        ── -->
+    <div class="history-section" id="history-section" style="display:none">
+      <h2>📋 Historial de rondas</h2>
+      <div class="history-list" id="history-list"></div>
+    </div>
+
+    <!-- Texto de ayuda en la parte inferior -->
+    <p class="hint">🎲 ¡La PC elige al azar — cada ronda es una sorpresa!</p>
+
+  </div><!-- fin .container -->
+
+  <!-- Enlace al archivo JavaScript externo (script.js) -->
+  <!-- Se coloca AL FINAL del body para que el HTML ya esté cargado     -->
+  <!-- cuando JavaScript empiece a buscar elementos por su id.          -->
+  <script src="script.js"></script>
+
+</body>
+</html>

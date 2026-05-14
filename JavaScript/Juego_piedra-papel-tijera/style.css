@@ -1,0 +1,654 @@
+/* ╔══════════════════════════════════════════════════════════════════════╗
+   ║  style.css — Piedra · Papel · Tijera                                ║
+   ║  Controla todo el aspecto visual: colores, tamaños,                 ║
+   ║  posiciones, animaciones y efectos del juego.                       ║
+   ╚══════════════════════════════════════════════════════════════════════╝ */
+
+
+/* ── RESET GLOBAL ─────────────────────────────────────────────────────────
+  Por defecto cada navegador aplica márgenes y paddings distintos.
+  Este bloque los elimina para partir desde cero y tener control
+  total del diseño en todos los navegadores.
+   ── */
+*, *::before, *::after {
+  box-sizing: border-box; /* El tamaño incluye bordes y paddings          */
+  margin:  0;             /* Sin margen exterior por defecto               */
+  padding: 0;             /* Sin relleno interior por defecto              */
+}
+
+
+/* ── VARIABLES CSS (tokens de diseño) ────────────────────────────────────
+  Las variables (:root) son como constantes: se definen una sola
+  vez y se reutilizan en todo el CSS con var(--nombre).
+  Si querés cambiar un color, solo lo cambiás acá arriba.
+   ── */
+:root {
+  --sky-top:    #6DD5FA;                /* Azul cielo claro (parte alta del fondo) */
+  --sky-bot:    #a8edea;                /* Azul celeste (parte baja del fondo)      */
+  --grass:      #56C568;                /* Verde césped                             */
+  --surface:    rgba(255,255,255,0.82); /* Blanco semitransparente para paneles     */
+  --text-dark:  #2D3436;               /* Casi negro para texto principal           */
+  --text-mid:   #636e72;               /* Gris para texto secundario               */
+  --win:        #00B894;               /* Verde esmeralda → victoria               */
+  --lose:       #D63031;               /* Rojo → derrota                           */
+  --draw:       #F39C12;               /* Naranja → empate                         */
+  --radius-lg:  20px;                  /* Bordes redondeados grandes               */
+  --radius-xl:  28px;                  /* Bordes redondeados extra grandes         */
+  --transition: 0.28s cubic-bezier(.4,0,.2,1); /* Curva de animación suave        */
+}
+
+
+/* ── FONDO PRINCIPAL: ESCENA DE DÍA ANIMADA ──────────────────────────────
+  El <body> es el contenedor raíz de toda la página.
+  Degradado vertical de azul cielo arriba a verde claro abajo,
+  simulando el cielo y el campo durante el día.
+   ── */
+body {
+  font-family: 'Nunito', sans-serif; /* Fuente base de la página           */
+  min-height: 100vh;                 /* Mínimo: altura completa de pantalla */
+  display: flex;                     /* Flexbox: organiza hijos en columna  */
+  flex-direction: column;            /* Los hijos se apilan verticalmente   */
+  align-items: center;               /* Centra horizontalmente              */
+  justify-content: flex-start;       /* Empieza desde arriba                */
+  padding: 0 1rem 3rem;             /* Espacio interior: arriba, lados, abajo */
+  overflow-x: hidden;               /* Oculta desbordamiento horizontal     */
+  position: relative;               /* Contexto para elementos posicionados */
+
+  /* Degradado vertical de azul cielo a verde claro */
+  background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-bot) 60%, #c8f7c5 100%);
+}
+
+
+/* ── SOL ANIMADO (pseudo-elemento ::before del body) ─────────────────────
+  Los pseudo-elementos ::before y ::after permiten agregar elementos
+  decorativos desde CSS sin escribir HTML extra.
+  Este sol flota y rota suavemente arriba a la izquierda.
+   ── */
+body::before {
+  content: '☀️';            /* El emoji del sol como contenido            */
+  position: fixed;          /* Fijo: no se mueve al hacer scroll           */
+  top: 18px;                /* Distancia desde arriba                      */
+  left: 24px;               /* Distancia desde la izquierda                */
+  font-size: 3.2rem;        /* Tamaño del sol                              */
+  animation: sunFloat 6s ease-in-out infinite; /* Flota infinitamente     */
+  z-index: 0;               /* Debajo del contenido principal              */
+  pointer-events: none;     /* No bloquea clicks del usuario               */
+}
+
+/* El sol sube 8px y rota ligeramente de forma continua */
+@keyframes sunFloat {
+  0%, 100% { transform: translateY(0)   rotate(-5deg); } /* Posición inicial */
+  50%       { transform: translateY(-8px) rotate(5deg); } /* Sube y rota     */
+}
+
+
+/* ── NUBES ANIMADAS (pseudo-elemento ::after del body) ───────────────────
+  Segunda nube decorativa que viaja de derecha a izquierda
+  cruzando toda la pantalla de forma continua.
+   ── */
+body::after {
+  content: '☁️ ☁️';        /* Dos nubes como contenido                    */
+  position: fixed;
+  top: 40px;
+  right: -80px;             /* Empieza fuera de pantalla por la derecha    */
+  font-size: 2.8rem;
+  animation: cloudMove 18s linear infinite; /* Se mueve lento, siempre   */
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.85;
+}
+
+/* Las nubes viajan desde afuera de la derecha hasta salir por la izquierda */
+@keyframes cloudMove {
+  0%   { right: -80px; }
+  100% { right: 110vw; } /* 110vw: sale por la izquierda de la pantalla   */
+}
+
+
+/* ── CÉSPED INFERIOR ──────────────────────────────────────────────────────
+  Franja verde fija en la parte baja de la pantalla.
+  Borde superior ondulado logrado con border-radius asimétrico.
+   ── */
+.grass-bg {
+  position: fixed;          /* Fijo en la parte baja de la pantalla        */
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 90px;
+  background: var(--grass);
+  z-index: 0;
+  pointer-events: none;
+  /* Borde superior ondulado (60% horizontal / 30px vertical)             */
+  border-radius: 60% 60% 0 0 / 30px 30px 0 0;
+}
+
+/* Flores decorativas sobre el césped usando ::before */
+.grass-bg::before {
+  content: '🌸 🌼 🌺 🌻 🌸 🌼 🌺 🌻 🌸 🌼';
+  position: absolute;
+  top: -10px;               /* Sobresale un poco por encima del césped     */
+  left: 0;
+  width: 100%;
+  font-size: 1.4rem;
+  text-align: center;
+  letter-spacing: 1.2rem;   /* Separación entre flores                     */
+}
+
+
+/* ── NUBE EXTRA (izquierda, dirección opuesta) ────────────────────────────
+  Tercera nube con distinto tiempo para crear variedad visual.
+   ── */
+.cloud-extra {
+  position: fixed;
+  top: 80px;
+  left: -100px;             /* Empieza fuera de pantalla por la izquierda  */
+  font-size: 2.4rem;
+  opacity: 0.7;
+  z-index: 0;
+  pointer-events: none;
+  animation: cloudMoveLeft 22s linear infinite;
+}
+
+/* Viaja desde la izquierda hacia la derecha (misma dirección que las otras) */
+@keyframes cloudMoveLeft {
+  0%   { left: -100px; }
+  100% { left: 110vw; }
+}
+
+
+/* ── PÁJAROS DECORATIVOS ──────────────────────────────────────────────────
+  Vuelan cruzando la pantalla con un delay de 3s para no
+  coincidir visualmente con las nubes.
+   ── */
+.birds {
+  position: fixed;
+  top: 130px;
+  right: -60px;
+  font-size: 1.6rem;
+  opacity: 0.8;
+  z-index: 0;
+  pointer-events: none;
+  /* Delay de 3s: empieza a volar 3 segundos después de cargar la página */
+  animation: birdsFly 14s linear infinite 3s;
+}
+
+@keyframes birdsFly {
+  0%   { right: -60px; }
+  100% { right: 110vw; }
+}
+
+
+/* ── CONTENEDOR PRINCIPAL ─────────────────────────────────────────────────
+  Agrupa todo el contenido del juego.
+  z-index: 2 lo pone por encima de los decorativos del fondo (z-index 0).
+   ── */
+.container {
+  position: relative;
+  z-index: 2;               /* Sobre el fondo decorativo                   */
+  width: 100%;
+  max-width: 620px;         /* Máximo ancho (funciona bien en PC y móvil)  */
+  display: flex;
+  flex-direction: column;   /* Apila las secciones verticalmente           */
+  align-items: center;
+  gap: 1.4rem;              /* Espacio entre cada sección del juego        */
+  padding-top: 1.5rem;
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+  ENCABEZADO
+   ══════════════════════════════════════════════════════════════════════════ */
+
+header {
+  text-align: center;
+}
+
+/* Título grande con fuente redondeada y animación de entrada */
+header h1 {
+  font-family: 'Fredoka One', cursive; /* Fuente redondeada y divertida     */
+  /* clamp(min, preferido, max): escala el tamaño según el ancho de pantalla */
+  font-size: clamp(2.4rem, 8vw, 4.2rem);
+  line-height: 1.1;
+  color: #fff;
+  /* Sombra de texto para que resalte sobre el fondo celeste               */
+  text-shadow:
+    0 2px 0 rgba(0,0,0,.15),
+    0 4px 16px rgba(0,0,0,.12);
+  /* Rebote elástico al cargar la página */
+  animation: titleBounce 0.7s cubic-bezier(.36,1.5,.5,1) both;
+}
+
+/* El título cae desde arriba con efecto elástico al cargar */
+@keyframes titleBounce {
+  from { transform: translateY(-40px); opacity: 0; }
+  to   { transform: translateY(0);     opacity: 1; }
+}
+
+/* Subtítulo debajo del título principal */
+header p {
+  color: rgba(255,255,255,0.85);
+  font-size: 1rem;
+  font-weight: 700;
+  margin-top: .3rem;
+  letter-spacing: .04em;
+  text-shadow: 0 1px 4px rgba(0,0,0,.15);
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+  PANEL GENÉRICO (clase reutilizable)
+  Base visual compartida por el marcador y la arena.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.panel {
+  width: 100%;
+  background: var(--surface);       /* Blanco semitransparente              */
+  border-radius: var(--radius-xl);  /* Bordes muy redondeados               */
+  box-shadow: 0 4px 24px rgba(0,0,0,.10); /* Sombra suave tipo "tarjeta"   */
+  backdrop-filter: blur(6px);       /* Desenfoca el fondo detrás del panel  */
+  border: 2.5px solid rgba(255,255,255,0.6);
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+  MARCADOR DE PUNTOS
+  Muestra Victorias / Empates / Derrotas acumulados.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.scoreboard {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  padding: .9rem 1.5rem;
+}
+
+/* Columna individual: etiqueta encima + número abajo */
+.score-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .1rem;
+  min-width: 72px;
+}
+
+/* Etiqueta pequeña (ej: "🏆 Victorias") */
+.score-block .label {
+  font-size: .7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--text-mid);
+}
+
+/* Número grande del marcador */
+.score-block .number {
+  font-family: 'Fredoka One', cursive;
+  font-size: 2.6rem;
+  line-height: 1;
+}
+
+/* Colores distintos para cada tipo de resultado */
+.score-block.wins  .number { color: var(--win);  }
+.score-block.draws .number { color: var(--draw); }
+.score-block.loses .number { color: var(--lose); }
+
+/* Animación de rebote cuando el número cambia (activada desde JS) */
+.score-block .number.bump {
+  animation: bump .4s cubic-bezier(.36,1.6,.5,1);
+}
+
+@keyframes bump {
+  0%, 100% { transform: scale(1);    }
+  50%       { transform: scale(1.7); } /* Se agranda al 170% en el medio   */
+}
+
+/* Línea separadora vertical entre los bloques del marcador */
+.score-divider {
+  width: 1.5px;
+  height: 44px;
+  background: rgba(0,0,0,.08);
+  border-radius: 1px;
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+  ARENA DE COMBATE
+  Zona central con los emojis del jugador y la PC, y el resultado.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.arena {
+  padding: 1.4rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .8rem;
+  min-height: 195px;        /* Altura mínima para no "saltar" al mostrar resultado */
+  justify-content: center;
+  transition: border-color var(--transition), background var(--transition);
+}
+
+/* Clases aplicadas por JS para cambiar el borde según resultado */
+.arena.result-win  { border-color: rgba(0,184,148,.5);  }
+.arena.result-lose { border-color: rgba(214,48,49,.45); }
+.arena.result-draw { border-color: rgba(243,156,18,.5); }
+
+/* Fila horizontal con los dos luchadores y el VS */
+.arena-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  width: 100%;
+  gap: 1rem;
+}
+
+/* Columna de cada luchador: nombre, emoji, etiqueta de elección */
+.fighter {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .35rem;
+  flex: 1; /* Cada fighter ocupa el mismo espacio disponible              */
+}
+
+/* Nombre del luchador (ej: "Vos 🙋") */
+.fighter .name {
+  font-size: .7rem;
+  font-weight: 700;
+  color: var(--text-mid);
+  text-transform: uppercase;
+  letter-spacing: .1em;
+}
+
+/* Emoji gigante de la elección (🪨 📄 ✂️) */
+.fighter .emoji {
+  font-size: 4rem;
+  line-height: 1;
+  filter: drop-shadow(0 4px 8px rgba(0,0,0,.15));
+  transition: transform .2s;
+}
+
+/* Nombre de la elección en texto (ej: "Piedra") */
+.fighter .choice-label {
+  font-size: .85rem;
+  font-weight: 600;
+  color: var(--text-mid);
+  font-style: italic;
+  min-height: 1.1em; /* Reserva espacio aunque esté vacío                 */
+}
+
+/* Badge "VS" entre los dos luchadores */
+.vs-badge {
+  font-family: 'Fredoka One', cursive;
+  font-size: 1.8rem;
+  color: #b2bec3;
+  flex-shrink: 0; /* No se encoge aunque haya poco espacio                */
+}
+
+/* Texto grande del resultado (¡GANASTE!, PERDISTE, EMPATE) */
+.result-text {
+  font-family: 'Fredoka One', cursive;
+  font-size: 2rem;
+  letter-spacing: .02em;
+  text-align: center;
+  min-height: 2.4rem; /* Reserva espacio antes del primer juego           */
+}
+
+/* Colores del resultado según quién ganó */
+.result-text.win  { color: var(--win);  }
+.result-text.lose { color: var(--lose); }
+.result-text.draw { color: var(--draw); }
+
+/* Frase secundaria debajo del resultado */
+.result-detail {
+  font-size: .85rem;
+  color: var(--text-mid);
+  text-align: center;
+  font-style: italic;
+  font-weight: 600;
+  min-height: 1.1em;
+}
+
+
+/* ── ANIMACIONES DE COMBATE ───────────────────────────────────────────────
+  Al jugar, el emoji del jugador se sacude hacia la izquierda
+  y el de la PC hacia la derecha, simulando un golpe.
+  Se activan agregando la clase "shake" con JavaScript.
+   ── */
+@keyframes shakeLeft {
+  0%, 100% { transform: translateX(0)    rotate(0deg);    }
+  30%       { transform: translateX(-18px) rotate(-10deg); }
+  70%       { transform: translateX(7px)  rotate(5deg);   }
+}
+
+@keyframes shakeRight {
+  0%, 100% { transform: translateX(0)   rotate(0deg);   }
+  30%       { transform: translateX(18px) rotate(10deg); }
+  70%       { transform: translateX(-7px) rotate(-5deg); }
+}
+
+.fighter.left  .emoji.shake { animation: shakeLeft  .55s ease; }
+.fighter.right .emoji.shake { animation: shakeRight .55s ease; }
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+  BOTONES DE ELECCIÓN (Piedra / Papel / Tijera)
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* Contenedor flex: los 3 botones se distribuyen en fila */
+.choices {
+  display: flex;
+  gap: .75rem;
+  width: 100%;
+}
+
+/* Estilo base compartido por los 3 botones */
+.choice-btn {
+  flex: 1; /* Los 3 botones comparten el ancho total por igual            */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .45rem;
+  padding: 1rem .5rem;
+  border: 3px solid transparent;
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  color: var(--text-dark);
+  cursor: pointer;         /* Cambia el cursor a "mano" al pasar encima    */
+  font-family: 'Nunito', sans-serif;
+  font-size: .8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  transition: all var(--transition);
+  box-shadow: 0 4px 14px rgba(0,0,0,.08);
+}
+
+/* Color de acento único para cada botón (variable local CSS) */
+.choice-btn[data-choice="1"] { --accent: #E17055; } /* Piedra → naranja-rojo */
+.choice-btn[data-choice="2"] { --accent: #0984E3; } /* Papel  → azul         */
+.choice-btn[data-choice="3"] { --accent: #00B894; } /* Tijera → verde        */
+
+/* Efecto hover: sube, agranda y aplica borde con el color del botón */
+.choice-btn:hover {
+  border-color: var(--accent);
+  transform: translateY(-5px) scale(1.04);
+  box-shadow: 0 10px 28px -4px color-mix(in srgb, var(--accent) 35%, transparent);
+}
+
+/* Efecto click: se achica momentáneamente para simular presión */
+.choice-btn:active {
+  transform: scale(.94);
+}
+
+/* Emoji grande dentro del botón */
+.choice-btn .btn-emoji {
+  font-size: 2.8rem;
+  line-height: 1;
+  transition: transform .25s;
+}
+
+/* El emoji salta cuando el mouse está encima del botón */
+.choice-btn:hover .btn-emoji {
+  animation: emojiJump .4s cubic-bezier(.36,1.6,.5,1);
+}
+
+@keyframes emojiJump {
+  0%, 100% { transform: translateY(0);    }
+  50%       { transform: translateY(-8px); } /* Salta 8px hacia arriba    */
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+  BOTÓN REINICIAR PARTIDA
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.reset-btn {
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  padding: .65rem 1.6rem;
+  background: rgba(255,255,255,.75);
+  border: 2px solid rgba(255,255,255,.8);
+  border-radius: 999px;    /* Forma de cápsula completamente redondeada    */
+  color: var(--text-mid);
+  font-family: 'Nunito', sans-serif;
+  font-size: .82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  cursor: pointer;
+  transition: all var(--transition);
+  box-shadow: 0 3px 12px rgba(0,0,0,.08);
+}
+
+/* Al pasar el mouse: se pone blanco y texto oscuro */
+.reset-btn:hover {
+  background: #fff;
+  color: var(--text-dark);
+  transform: scale(1.04);
+}
+
+.reset-btn:active { transform: scale(.97); }
+
+/* Ícono SVG de flecha circular */
+.reset-btn svg {
+  width: 14px;
+  height: 14px;
+  transition: transform .5s;
+}
+
+/* El ícono rota 360° al hacer hover */
+.reset-btn:hover svg {
+  transform: rotate(360deg);
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+  HISTORIAL DE RONDAS
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.history-section {
+  width: 100%;
+}
+
+/* Título de la sección */
+.history-section h2 {
+  font-family: 'Fredoka One', cursive;
+  font-size: 1rem;
+  color: rgba(255,255,255,.9);
+  text-shadow: 0 1px 4px rgba(0,0,0,.15);
+  margin-bottom: .5rem;
+  padding-left: .25rem;
+}
+
+/* Lista scrolleable si hay muchas rondas */
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: .3rem;
+  max-height: 175px;
+  overflow-y: auto;
+  /* Scrollbar personalizada (Firefox y Chrome/Edge) */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,.4) transparent;
+}
+
+/* Cada fila del historial (una ronda jugada) */
+.history-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255,255,255,.8);
+  border-radius: 12px;
+  padding: .44rem .9rem;
+  font-size: .82rem;
+  font-weight: 600;
+  border-left: 4px solid transparent; /* El color cambia según resultado   */
+  animation: slideIn .3s ease;        /* Entra con animación suave         */
+}
+
+/* Animación de entrada: cada item aparece deslizándose desde arriba */
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(-5px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+/* Color del borde izquierdo según resultado */
+.history-item.win  { border-color: var(--win);  }
+.history-item.lose { border-color: var(--lose); }
+.history-item.draw { border-color: var(--draw); }
+
+.history-item .round { color: var(--text-mid); font-size: .7rem; }
+.history-item .match { color: var(--text-dark); }
+
+/* Badge de color con el resultado (Victoria / Derrota / Empate) */
+.history-item .badge {
+  font-size: .66rem;
+  font-weight: 700;
+  padding: .13rem .48rem;
+  border-radius: 999px;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+}
+
+/* Fondo y color de texto del badge según resultado */
+.history-item.win  .badge { background: rgba(0,184,148,.15);  color: var(--win);  }
+.history-item.lose .badge { background: rgba(214,48,49,.15);  color: var(--lose); }
+.history-item.draw .badge { background: rgba(243,156,18,.15); color: var(--draw); }
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+  TEXTO DE AYUDA INFERIOR
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.hint {
+  color: rgba(255,255,255,.8);
+  font-size: .82rem;
+  font-weight: 700;
+  text-align: center;
+  text-shadow: 0 1px 4px rgba(0,0,0,.15);
+}
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+  CONFETI (efecto de celebración al ganar)
+  Cada pieza es un div creado dinámicamente por JavaScript.
+  Se posiciona fijo sobre la pantalla y cae girando hasta desaparecer.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+.confetti-piece {
+  position: fixed;          /* Posicionado sobre toda la pantalla          */
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  pointer-events: none;     /* No interfiere con clicks del usuario        */
+  z-index: 9999;            /* Por encima de absolutamente todo            */
+  animation: confettiFall 1.3s ease-in forwards; /* Una sola vez y listo  */
+}
+
+/* La pieza cae hacia abajo girando y se desvanece al llegar abajo */
+@keyframes confettiFall {
+  0%   { transform: translateY(0)     rotate(0deg);   opacity: 1; }
+  100% { transform: translateY(360px) rotate(800deg); opacity: 0; }
+}
