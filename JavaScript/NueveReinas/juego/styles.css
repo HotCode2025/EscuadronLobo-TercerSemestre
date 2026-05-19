@@ -1,0 +1,557 @@
+/*
+  ============================================================
+  styles.css — Estilos del Visualizador de las N Reinas
+  ============================================================
+  Organización:
+  1. Variables y Reset
+  2. Tipografía y layout base
+  3. Hero / Encabezado
+  4. Controles
+  5. Índices
+  6. Tableros
+  7. Explicación didáctica
+  8. Footer
+  9. Animaciones
+  10. Responsive
+  ============================================================
+*/
+
+/* ── 1. VARIABLES Y RESET ─────────────────────────────────── */
+:root {
+  /* Paleta de colores */
+  --color-bg:        #0f0f14;       /* Fondo general muy oscuro */
+  --color-surface:   #1a1a24;       /* Superficie de tarjetas */
+  --color-border:    #2e2e42;       /* Bordes sutiles */
+  --color-accent:    #c9a84c;       /* Dorado: color principal de acento */
+  --color-accent2:   #7c6bc5;       /* Violeta: acento secundario */
+  --color-text:      #e8e4d9;       /* Texto principal claro */
+  --color-muted:     #7a7890;       /* Texto secundario atenuado */
+  --color-queen:     #c9a84c;       /* Color del símbolo de reina */
+  --color-safe:      rgba(201,168,76,.15);  /* Fondo de celda con reina */
+  --color-danger:    rgba(220, 80, 80, .25); /* Fondo de conflicto (animación) */
+
+  /* Colores del tablero */
+  --cell-light:      #d9cfc0;
+  --cell-dark:       #3a3550;
+
+  /* Fuentes */
+  --font-display:    'Playfair Display', Georgia, serif;
+  --font-body:       'Inter', sans-serif;
+  --font-mono:       'Fira Mono', monospace;
+
+  /* Espaciado */
+  --gap:             1.5rem;
+  --radius:          12px;
+  --radius-lg:       20px;
+}
+
+/* Reset universal */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* Clase utilitaria para ocultar elementos */
+.hidden { display: none !important; }
+
+/* ── 2. LAYOUT BASE ───────────────────────────────────────── */
+section, main, header, footer {
+  width: 100%;
+  max-width: 1100px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: var(--gap);
+  padding-right: var(--gap);
+}
+
+/* ── 3. HERO / ENCABEZADO ─────────────────────────────────── */
+.hero {
+  text-align: center;
+  padding: 4rem var(--gap) 2.5rem;
+  position: relative;
+}
+
+/* Línea decorativa superior */
+.hero::before {
+  content: '';
+  display: block;
+  width: 60px;
+  height: 3px;
+  background: var(--color-accent);
+  margin: 0 auto 1.5rem;
+  border-radius: 2px;
+}
+
+/* Badge "Algoritmo · Backtracking" */
+.hero-badge {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+  border: 1px solid var(--color-accent);
+  border-radius: 100px;
+  padding: 0.3rem 1rem;
+  margin-bottom: 1.25rem;
+}
+
+/* Título principal */
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 700;
+  line-height: 1.15;
+  margin-bottom: 1.2rem;
+  color: var(--color-text);
+}
+
+/* El span resalta en dorado */
+.hero-title span {
+  color: var(--color-accent);
+}
+
+/* ── LOGO + NOMBRE DEL EQUIPO ─────────────────────────────── */
+.hero-equipo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.9rem;
+  margin-bottom: 1.4rem;
+  padding: 0.6rem 1.5rem;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid var(--color-border);
+  border-radius: 100px;
+  display: inline-flex;
+}
+
+/* Logo con ligero filtro para que combine con el tema oscuro */
+.hero-logo {
+  width: 52px;
+  height: 52px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 8px rgba(124,107,197,0.4));
+  transition: transform 0.3s ease;
+}
+
+.hero-logo:hover {
+  transform: scale(1.1) rotate(-5deg);
+}
+
+/* Nombre del equipo */
+.hero-equipo-nombre {
+  font-family: var(--font-display);
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: var(--color-text);
+  line-height: 1;
+}
+
+.hero-equipo-nombre span {
+  color: var(--color-accent2); /* violeta */
+}
+
+/* Subtítulo descriptivo */
+.hero-subtitle {
+  max-width: 600px;
+  margin: 0 auto;
+  color: var(--color-muted);
+  font-size: 1.05rem;
+}
+
+.hero-subtitle strong { color: var(--color-text); }
+.hero-subtitle em     { color: var(--color-accent2); font-style: normal; }
+
+/* ── 4. CONTROLES ─────────────────────────────────────────── */
+.controles-section {
+  padding: 0 var(--gap) 2rem;
+}
+
+.controles-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 1.75rem 2rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 1.25rem;
+}
+
+/* Grupo label + input */
+.input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.input-group label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-muted);
+}
+
+.label-hint {
+  font-weight: 400;
+  color: var(--color-accent);
+}
+
+/* Input numérico */
+input[type="number"] {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  color: var(--color-text);
+  font-family: var(--font-mono);
+  font-size: 1.1rem;
+  padding: 0.55rem 1rem;
+  width: 100px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+input[type="number"]:focus {
+  border-color: var(--color-accent);
+}
+
+/* Grupo de botones */
+.btn-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+/* Estilos base de botón */
+.btn {
+  cursor: pointer;
+  border: none;
+  border-radius: var(--radius);
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.6rem 1.4rem;
+  transition: transform 0.15s, opacity 0.2s, box-shadow 0.2s;
+  user-select: none;
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.btn:not(:disabled):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+}
+
+.btn:not(:disabled):active {
+  transform: translateY(0);
+}
+
+/* Botón primario: dorado */
+.btn-primary {
+  background: var(--color-accent);
+  color: #1a1200;
+}
+
+/* Botón secundario: violeta */
+.btn-secondary {
+  background: var(--color-accent2);
+  color: #fff;
+}
+
+/* Botón fantasma: solo borde */
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-muted);
+}
+
+.btn-ghost:hover {
+  border-color: var(--color-text);
+  color: var(--color-text);
+}
+
+/* Badge de información de soluciones */
+.info-badge {
+  background: rgba(201,168,76,.1);
+  border: 1px solid rgba(201,168,76,.3);
+  border-radius: 100px;
+  color: var(--color-accent);
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  padding: 0.4rem 1rem;
+  white-space: nowrap;
+}
+
+/* ── 5. ÍNDICES ───────────────────────────────────────────── */
+.indices-section {
+  padding: 0 var(--gap) 1.5rem;
+}
+
+.indices-title {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  margin-bottom: 0.75rem;
+  color: var(--color-text);
+}
+
+/* Contenedor de badges de índice */
+.indices-display {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Cada badge muestra fila:columna */
+.indice-badge {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 0.4rem 0.75rem;
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  color: var(--color-accent);
+}
+
+.indices-hint {
+  font-size: 0.82rem;
+  color: var(--color-muted);
+}
+
+/* ── 6. TABLEROS ──────────────────────────────────────────── */
+.tableros-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--gap);
+  padding: 0 var(--gap) 2.5rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* Tarjeta de tablero */
+.tablero-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+/* Encabezado de la tarjeta */
+.tablero-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* Color de acento para "Proceso" */
+.tablero-header.proceso {
+  background: linear-gradient(135deg, rgba(124,107,197,.15), transparent);
+  border-bottom-color: rgba(124,107,197,.3);
+}
+
+/* Color de acento para "Solución" */
+.tablero-header.solucion {
+  background: linear-gradient(135deg, rgba(201,168,76,.12), transparent);
+  border-bottom-color: rgba(201,168,76,.3);
+}
+
+.tablero-icon {
+  font-size: 1.2rem;
+}
+
+.tablero-header h2 {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  flex: 1;
+}
+
+.tablero-sub {
+  font-size: 0.75rem;
+  color: var(--color-muted);
+}
+
+/* Contenedor del tablero con padding */
+.tablero-wrapper {
+  padding: 1rem;
+  display: flex;
+  justify-content: center;
+}
+
+/* El tablero en sí: grid de N×N celdas */
+.tablero {
+  display: grid;
+  /* Las columnas se asignan dinámicamente desde JS */
+  border: 2px solid var(--color-border);
+  border-radius: 6px;
+  overflow: hidden;
+  max-width: min(420px, 100%);
+  width: 100%;
+  aspect-ratio: 1;
+}
+
+/* ── CELDAS DEL TABLERO ───────────────────────────────────── */
+.celda {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1;
+  transition: background-color 0.25s;
+  position: relative;
+}
+
+/* Alternancia de colores: claro / oscuro */
+.celda.clara { background-color: var(--cell-light); }
+.celda.oscura { background-color: var(--cell-dark); }
+
+/* Celda con reina (resaltado) */
+.celda.reina {
+  background-color: var(--color-safe) !important;
+}
+
+/* Símbolo de la reina ♛ */
+.reina-simbolo {
+  font-size: clamp(0.8rem, 2.5vw, 1.6rem);
+  line-height: 1;
+  color: var(--color-queen);
+  text-shadow: 0 0 8px rgba(201,168,76,0.6);
+  animation: queenAppear 0.3s ease forwards;
+  user-select: none;
+}
+
+/* ── 7. EXPLICACIÓN DIDÁCTICA ─────────────────────────────── */
+.explicacion-section {
+  padding: 2.5rem var(--gap);
+  max-width: 1100px;
+  margin: 0 auto;
+  border-top: 1px solid var(--color-border);
+}
+
+.explicacion-titulo {
+  font-family: var(--font-display);
+  font-size: 1.6rem;
+  margin-bottom: 1.75rem;
+  text-align: center;
+}
+
+/* Grid de 4 pasos */
+.pasos-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+}
+
+/* Tarjeta de cada paso */
+.paso-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 1.25rem;
+  transition: border-color 0.2s, transform 0.2s;
+}
+
+.paso-card:hover {
+  border-color: var(--color-accent);
+  transform: translateY(-3px);
+}
+
+/* Número grande del paso */
+.paso-numero {
+  font-family: var(--font-mono);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-accent);
+  opacity: 0.5;
+  line-height: 1;
+  margin-bottom: 0.5rem;
+}
+
+.paso-card h3 {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+  color: var(--color-text);
+}
+
+.paso-card p {
+  font-size: 0.83rem;
+  color: var(--color-muted);
+  line-height: 1.55;
+}
+
+/* ── 8. FOOTER ────────────────────────────────────────────── */
+.footer {
+  text-align: center;
+  padding: 2rem var(--gap);
+  color: var(--color-muted);
+  font-size: 0.8rem;
+  border-top: 1px solid var(--color-border);
+}
+
+/* ── 9. ANIMACIONES ───────────────────────────────────────── */
+
+/* Aparición de la reina con escala y fade */
+@keyframes queenAppear {
+  from { opacity: 0; transform: scale(0.4); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+/* Pulso de celda con conflicto (backtrack) */
+@keyframes pulsoConflicto {
+  0%   { background-color: var(--color-danger); }
+  100% { background-color: inherit; }
+}
+
+.celda.conflicto {
+  animation: pulsoConflicto 0.4s ease;
+}
+
+/* ── 10. RESPONSIVE ───────────────────────────────────────── */
+@media (max-width: 768px) {
+  /* En móvil, los tableros se apilan verticalmente */
+  .tableros-grid {
+    grid-template-columns: 1fr;
+  }
+
+  /* Los pasos pasan a 2 columnas */
+  .pasos-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .controles-card {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+@media (max-width: 480px) {
+  .pasos-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-title {
+    font-size: 1.8rem;
+  }
+}

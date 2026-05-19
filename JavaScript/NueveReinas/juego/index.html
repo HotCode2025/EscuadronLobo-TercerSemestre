@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <!--
+    ============================================================
+    index.html — Visualizador del Problema de las N Reinas
+    ============================================================
+    Estructura principal de la aplicación:
+    - <head>: metadatos, fuentes y hoja de estilos
+    - <body>: interfaz de usuario (controles + tableros)
+    - <script>: lógica de interacción (app.js + NueveReinas.js)
+    ============================================================
+  -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Problema de las N Reinas</title>
+
+  <!-- Fuentes de Google: Playfair Display (títulos elegantes) + Fira Mono (código) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Fira+Mono:wght@400;500&family=Inter:wght@300;400;600&display=swap" rel="stylesheet" />
+
+  <!-- Hoja de estilos principal -->
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- ── ENCABEZADO ───────────────────────────────────────── -->
+  <header class="hero">
+    <div class="hero-badge">Algoritmo · Backtracking</div>
+    <h1 class="hero-title">♛ Problema de las <span>N Reinas</span></h1>
+
+    <!-- Logo Escuadrón Lobo como título secundario -->
+    <div class="hero-equipo">
+      <img src="logo.png" alt="Logo Escuadrón Lobo" class="hero-logo" />
+      <h2 class="hero-equipo-nombre">Escuadrón <span>Lobo</span></h2>
+    </div>
+
+    <p class="hero-subtitle">
+      Coloca <strong>N reinas</strong> en un tablero de ajedrez N×N sin que ninguna se ataque entre sí.
+      El algoritmo de <em>backtracking</em> prueba todas las posibilidades retrocediendo cuando detecta un conflicto.
+    </p>
+  </header>
+
+  <!-- ── CONTROLES ────────────────────────────────────────── -->
+  <section class="controles-section">
+    <div class="controles-card">
+
+      <!-- Input N -->
+      <div class="input-group">
+        <label for="inputN">Tamaño N <span class="label-hint">(mínimo 8)</span></label>
+        <input
+          type="number"
+          id="inputN"
+          value="8"
+          min="8"
+          max="14"
+          aria-label="Tamaño del tablero"
+        />
+      </div>
+
+      <!-- Botones principales -->
+      <div class="btn-group">
+        <button id="btnResolver" class="btn btn-primary" onclick="resolverJuego()">
+          ▶ Resolver
+        </button>
+        <button id="btnSiguiente" class="btn btn-secondary" onclick="siguienteSolucion()" disabled>
+          Siguiente solución →
+        </button>
+        <button id="btnReset" class="btn btn-ghost" onclick="resetJuego()">
+          ↺ Reiniciar
+        </button>
+      </div>
+
+      <!-- Información de soluciones -->
+      <div id="infoSoluciones" class="info-badge hidden"></div>
+
+    </div>
+  </section>
+
+  <!-- ── PANEL DE ÍNDICES ─────────────────────────────────── -->
+  <!--
+    Muestra el arreglo con los índices de columna de cada reina.
+    Ejemplo: [0, 4, 7, 5, 2, 6, 1, 3] significa:
+    - Fila 0 → reina en columna 0
+    - Fila 1 → reina en columna 4
+    - etc.
+  -->
+  <section id="indicesSection" class="indices-section hidden">
+    <h3 class="indices-title">Arreglo de índices de la solución</h3>
+    <div id="indicesDisplay" class="indices-display"></div>
+    <p class="indices-hint">Cada posición representa una <strong>fila</strong>; el valor indica la <strong>columna</strong> donde está la reina.</p>
+  </section>
+
+  <!-- ── TABLEROS ──────────────────────────────────────────── -->
+  <main class="tableros-grid" id="tablerosGrid">
+
+    <!-- Tablero Proceso (se actualiza con la animación) -->
+    <article class="tablero-card" id="cardProceso">
+      <header class="tablero-header proceso">
+        <span class="tablero-icon">⚙</span>
+        <h2>Proceso</h2>
+        <span class="tablero-sub">Backtracking en acción</span>
+      </header>
+      <div class="tablero-wrapper">
+        <div id="tableroProceso" class="tablero"></div>
+      </div>
+    </article>
+
+    <!-- Tablero Solución (muestra la solución final) -->
+    <article class="tablero-card" id="cardSolucion">
+      <header class="tablero-header solucion">
+        <span class="tablero-icon">✓</span>
+        <h2>Solución</h2>
+        <span class="tablero-sub">Disposición final válida</span>
+      </header>
+      <div class="tablero-wrapper">
+        <div id="tableroSolucion" class="tablero"></div>
+      </div>
+    </article>
+
+  </main>
+
+  <!-- ── EXPLICACIÓN DIDÁCTICA ────────────────────────────── -->
+  <section class="explicacion-section">
+    <h2 class="explicacion-titulo">¿Cómo funciona el algoritmo?</h2>
+    <div class="pasos-grid">
+
+      <div class="paso-card">
+        <div class="paso-numero">01</div>
+        <h3>Colocar una reina</h3>
+        <p>El algoritmo intenta colocar una reina en la primera columna disponible de la fila actual.</p>
+      </div>
+
+      <div class="paso-card">
+        <div class="paso-numero">02</div>
+        <h3>Verificar seguridad</h3>
+        <p>Se comprueba que ninguna otra reina amenace esa posición (misma fila, columna o diagonal).</p>
+      </div>
+
+      <div class="paso-card">
+        <div class="paso-numero">03</div>
+        <h3>Recursión</h3>
+        <p>Si la posición es segura, se repite el proceso para la siguiente fila con la reina en su lugar.</p>
+      </div>
+
+      <div class="paso-card">
+        <div class="paso-numero">04</div>
+        <h3>Backtracking</h3>
+        <p>Si no hay columna válida en una fila, se retrocede a la fila anterior y se prueba la siguiente columna.</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── PIE DE PÁGINA ─────────────────────────────────────── -->
+  <footer class="footer">
+    <p>Problema de las N Reinas · Algoritmo de Backtracking · JavaScript</p>
+  </footer>
+
+  <!-- Scripts: primero la lógica del algoritmo, luego la interfaz -->
+  <script src="NueveReinas.js"></script>
+  <script src="app.js"></script>
+
+</body>
+</html>
