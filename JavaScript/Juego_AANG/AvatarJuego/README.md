@@ -17,7 +17,7 @@ El jugador elige un personaje (Zuko, Katara, Aang o Toph) y se enfrenta a un opo
 ```
 AvatarJuego/
 ├── index.html       → Estructura HTML completa del juego
-├── styles.css       → Estilos visuales (tema Simpson/cómic)
+├── styles.css       → Estilos visuales (tema /cómic)
 ├── logo_lobo.png    → Logo del Escuadrón Lobo
 └── js/
     └── avatar.js    → Lógica del juego en JavaScript
