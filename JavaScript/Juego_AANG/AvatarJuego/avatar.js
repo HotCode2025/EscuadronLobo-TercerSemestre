@@ -1,6 +1,6 @@
 /**
  * ============================================================
- *  avatar.js — Lógica del Juego Avatar Simpson Edition
+ *  avatar.js — Lógica del Juego Avatar 
  * ============================================================
  *
  *  Este archivo contiene TODA la lógica del juego:
