@@ -6,7 +6,7 @@
 
 ## ¿De qué trata el juego?
 
-Es un juego de batalla por turnos basado en **La Leyenda de Aang: El Avatar**
+Es un juego de batalla por turnos basado en **La Leyenda de Aang: El Avatar**.
 
 El jugador elige un personaje (Zuko, Katara, Aang o Toph) y se enfrenta a un oponente elegido automáticamente por la CPU. En cada turno se elige un ataque; el que tenga mayor poder gana el turno y el rival pierde una vida. Gana quien deje al otro sin vidas.
 

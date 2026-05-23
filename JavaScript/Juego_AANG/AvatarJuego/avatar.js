@@ -1,6 +1,6 @@
 /**
  * ============================================================
- *  avatar.js — Lógica del Juego Avatar 
+ *  avatar.js — Lógica del Juego Avatar
  * ============================================================
  *
  *  Este archivo contiene TODA la lógica del juego:
@@ -203,7 +203,7 @@ function seleccionarOponenteAleatorio(excluir) {
  * ataqueOponenteAleatorio()
  *
  * La CPU elige un ataque al azar del array ATAQUES.
- * Simula al oponente.
+ * Simula al oponente como "Homero pensando en donuts".
  *
  * @returns {object} - objeto ataque aleatorio
  */
@@ -249,7 +249,7 @@ function ejecutarAtaque(idAtaque) {
       ${estado.personajeJugador.nombre} atacó con ${ataquejugador.emoji} ${ataquejugador.nombre} 
       (Poder ${ataquejugador.poder}) y el oponente respondió con 
       ${ataqueOponente.emoji} ${ataqueOponente.nombre} (Poder ${ataqueOponente.poder}).
-      <br><strong>🎉 ¡GANASTE el turno!</strong>
+      <br><strong>🎉 ¡GANASTE el turno! </strong>
     `;
   } else if (ataquejugador.poder < ataqueOponente.poder) {
     // Oponente gana este turno → el jugador pierde vida
@@ -258,14 +258,14 @@ function ejecutarAtaque(idAtaque) {
       ${estado.personajeJugador.nombre} atacó con ${ataquejugador.emoji} ${ataquejugador.nombre} 
       (Poder ${ataquejugador.poder}) pero el oponente atacó con 
       ${ataqueOponente.emoji} ${ataqueOponente.nombre} (Poder ${ataqueOponente.poder}).
-      <br><strong>😵 ¡Perdiste el turno!</strong>
+      <br><strong>😵 ¡Perdiste el turno! </strong>
     `;
   } else {
     // Empate → nadie pierde vida
     mensajeTurno = `
       ${estado.personajeJugador.nombre} atacó con ${ataquejugador.emoji} ${ataquejugador.nombre} 
       y el oponente con ${ataqueOponente.emoji} ${ataqueOponente.nombre}. ¡Mismo poder!
-      <br><strong>🤝 ¡EMPATE!</strong>
+      <br><strong>🤝 ¡EMPATE! </strong>
     `;
   }
 
