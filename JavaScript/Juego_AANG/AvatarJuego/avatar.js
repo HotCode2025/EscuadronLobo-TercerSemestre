@@ -37,25 +37,25 @@ const PERSONAJES = {
     nombre:   "Zuko",
     emoji:    "🤴🔥",
     elemento: "Fuego",
-    frase:    "¡Yo soy Zuko, Señor del Fuego! ¡Como Bart, pero con más drama! 🔥"
+    frase:    "¡Yo soy Zuko, Señor del Fuego! 🔥"
   },
   katara: {
     nombre:   "Katara",
     emoji:    "👧💧",
     elemento: "Agua",
-    frase:    "¡Soy Katara, maestra del agua! ¡Tan sabia como Lisa! 💧"
+    frase:    "¡Soy Katara, maestra del agua! 💧"
   },
   aang:   {
     nombre:   "Aang",
     emoji:    "👦🌪️",
     elemento: "Aire",
-    frase:    "¡Soy Aang, el Avatar! ¡Como Bart sin pelo y más budista! 🌪️"
+    frase:    "¡Soy Aang, el Avatar! 🌪️"
   },
   toph:   {
     nombre:   "Toph",
     emoji:    "👩🌱",
     elemento: "Tierra",
-    frase:    "¡Soy Toph! ¡Tan terca como Homero cuando hay donuts de por medio! 🌱"
+    frase:    "¡Soy Toph! 🌱"
   }
 };
 
@@ -141,7 +141,7 @@ function seleccionarPersonajeJugador() {
   // Si ninguno fue seleccionado, alertamos y salimos
   if (!valorSeleccionado) {
     // Usamos alert (igual que en el código original)
-    alert("⚠️ ¡D'OH! Debes seleccionar un personaje, como Homero necesita sus donuts.");
+    alert("⚠️ ¡D'OH! Debes seleccionar un personaje.");
     return; // detiene la función aquí
   }
 
@@ -203,7 +203,7 @@ function seleccionarOponenteAleatorio(excluir) {
  * ataqueOponenteAleatorio()
  *
  * La CPU elige un ataque al azar del array ATAQUES.
- * Simula al oponente como "Homero pensando en donuts".
+ * Simula al oponente.
  *
  * @returns {object} - objeto ataque aleatorio
  */
@@ -249,7 +249,7 @@ function ejecutarAtaque(idAtaque) {
       ${estado.personajeJugador.nombre} atacó con ${ataquejugador.emoji} ${ataquejugador.nombre} 
       (Poder ${ataquejugador.poder}) y el oponente respondió con 
       ${ataqueOponente.emoji} ${ataqueOponente.nombre} (Poder ${ataqueOponente.poder}).
-      <br><strong>🎉 ¡GANASTE el turno! ¡Como Bart escapando de Skinner!</strong>
+      <br><strong>🎉 ¡GANASTE el turno!</strong>
     `;
   } else if (ataquejugador.poder < ataqueOponente.poder) {
     // Oponente gana este turno → el jugador pierde vida
@@ -258,14 +258,14 @@ function ejecutarAtaque(idAtaque) {
       ${estado.personajeJugador.nombre} atacó con ${ataquejugador.emoji} ${ataquejugador.nombre} 
       (Poder ${ataquejugador.poder}) pero el oponente atacó con 
       ${ataqueOponente.emoji} ${ataqueOponente.nombre} (Poder ${ataqueOponente.poder}).
-      <br><strong>😵 ¡Perdiste el turno! ¡D'OH! Como Homero tropezando...</strong>
+      <br><strong>😵 ¡Perdiste el turno!</strong>
     `;
   } else {
     // Empate → nadie pierde vida
     mensajeTurno = `
       ${estado.personajeJugador.nombre} atacó con ${ataquejugador.emoji} ${ataquejugador.nombre} 
       y el oponente con ${ataqueOponente.emoji} ${ataqueOponente.nombre}. ¡Mismo poder!
-      <br><strong>🤝 ¡EMPATE! ¡Como Homero y Ned Flanders de acuerdo!</strong>
+      <br><strong>🤝 ¡EMPATE!</strong>
     `;
   }
 
@@ -368,20 +368,20 @@ function verificarFinJuego() {
   if (estado.vidasJugador <= 0 && estado.vidasOponente <= 0) {
     // Empate total (ambos llegaron a 0 al mismo tiempo)
     mensajeFinal = "🤝 ¡EMPATE TOTAL!";
-    detalleFinal = "¡Nadie gana, como cuando Homero olvida quién ganó!";
+    detalleFinal = "¡Nadie gana, como cuando juegas tú!";
     terminado    = true;
 
   } else if (estado.vidasOponente <= 0) {
     // El jugador ganó
     mensajeFinal = `🏆 ¡${estado.personajeJugador.nombre.toUpperCase()} GANÓ!`;
     detalleFinal = `¡Excelente, ${estado.personajeJugador.nombre}! 
-                   ¡Eres tan genial como Bart burlando a Skinner! 🎉`;
+                   ¡Eres tan genial! 🎉`;
     terminado    = true;
 
   } else if (estado.vidasJugador <= 0) {
     // El oponente ganó
     mensajeFinal = "😵 ¡PERDISTE!";
-    detalleFinal = `¡D'OH! Caíste como Homero en el sofá. ¡Intenta de nuevo! 🍩`;
+    detalleFinal = `¡Intenta de nuevo! 🍩`;
     terminado    = true;
   }
 
