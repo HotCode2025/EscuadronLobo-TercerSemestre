@@ -1,71 +1,87 @@
 /**
  * ============================================================
- *  avatar.js — Lógica del Juego Avatar 
+ *  avatar.js — LOS ELEMENTOS: La Leyenda de Aang
+ *  Lógica completa del juego (sin referencias a Simpsons)
  * ============================================================
  *
- *  Este archivo contiene TODA la lógica del juego:
- *  1. Datos de personajes y ataques (objetos JS)
- *  2. Estado global del juego (variables de control)
- *  3. Selección de personaje por el jugador
- *  4. Selección aleatoria del oponente (CPU)
- *  5. Lógica de ataque y comparación de poderes
- *  6. Actualización dinámica del DOM (vidas, mensajes)
- *  7. Detección del fin del juego
- *  8. Función de reinicio
- *
- *  Todos los cambios visuales se hacen con innerHTML y
- *  classList, sin recargar la página.
+ *  Contenido:
+ *  1. Datos de personajes y ataques
+ *  2. Estado global del juego
+ *  3. Referencias al DOM
+ *  4. Selección de personaje
+ *  5. Oponente aleatorio
+ *  6. Ejecución del ataque
+ *  7. Actualización del DOM (vidas, barras HP, expresiones)
+ *  8. Expresiones por resultado (gana / pierde / empata)
+ *  9. Verificar fin del juego
+ *  10. Reiniciar
+ *  11. Registro de eventos (addEventListener)
  * ============================================================
  */
 
-// ─────────────────────────────────────────────
-//  1. DATOS: PERSONAJES Y ATAQUES
-// ─────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────
+//  1. DATOS DE PERSONAJES Y ATAQUES
+// ─────────────────────────────────────────────────────────
 
 /**
- * PERSONAJES: objeto que guarda la info de cada personaje.
- * La clave es el value del <input type="radio"> en el HTML.
+ * PERSONAJES: objeto con los datos de cada guerrero.
+ * Clave = value del <input type="radio"> en el HTML.
  *
- * Cada personaje tiene:
- * - nombre:    nombre mostrado en pantalla
- * - emoji:     ícono visual grande
- * - elemento:  tipo de bendición
- * - frase:     frase estilo Simpsons al ser seleccionado
+ * expresiones: textos que se muestran en el bocadillo
+ *   según el resultado del turno (gana / pierde / empata).
+ * imagen: nombre del archivo PNG del personaje.
  */
 const PERSONAJES = {
-  zuko:   {
-    nombre:   "Zuko",
-    emoji:    "🤴🔥",
-    elemento: "Fuego",
-    frase:    "¡Yo soy Zuko, Señor del Fuego! 🔥"
+  aang: {
+    nombre:   "Aang",
+    elemento: "Aire",
+    emoji:    "🌪️",
+    imagen:   "AANG.png",
+    expresiones: {
+      gana:   "¡YAAAH! ¡El viento nunca miente! 🌪️✨",
+      pierde: "¡Auch! Eso dolió... ¡pero no me rindo! 😤",
+      empata: "¡El equilibrio es la clave del Avatar! 🔵"
+    }
   },
   katara: {
     nombre:   "Katara",
-    emoji:    "👧💧",
     elemento: "Agua",
-    frase:    "¡Soy Katara, maestra del agua! 💧"
+    emoji:    "💧",
+    imagen:   "KATARA.png",
+    expresiones: {
+      gana:   "¡El agua siempre encuentra su camino! 💧🏆",
+      pierde: "¡Grrr! ¡El agua no se rinde, vuelvo más fuerte! 😠",
+      empata: "¡Fluimos igual de fuerte... por ahora! 💧"
+    }
   },
-  aang:   {
-    nombre:   "Aang",
-    emoji:    "👦🌪️",
-    elemento: "Aire",
-    frase:    "¡Soy Aang, el Avatar! 🌪️"
+  zuko: {
+    nombre:   "Zuko",
+    elemento: "Fuego",
+    emoji:    "🔥",
+    imagen:   "ZUKO.png",
+    expresiones: {
+      gana:   "¡MI FUEGO ES IMPARABLE! 🔥👊 ¡HONOR!",
+      pierde: "¡IMPOSIBLE! ¡Esto no ha terminado! 😡🔥",
+      empata: "¡Ni tú ni yo... esta vez. 😤🔥"
+    }
   },
-  toph:   {
+  toph: {
     nombre:   "Toph",
-    emoji:    "👩🌱",
     elemento: "Tierra",
-    frase:    "¡Soy Toph!  🌱"
+    emoji:    "🌱",
+    imagen:   "TOPH.png",
+    expresiones: {
+      gana:   "¡JA! ¿Eso fue todo? ¡Soy la mejor del mundo! 🌱💪",
+      pierde: "¡Bien jugado! Pero la próxima te aplasto 😤🪨",
+      empata: "¡Está bien, esta vez empatamos... ESTA VEZ! 🌱"
+    }
   }
 };
 
 /**
- * ATAQUES: array con todos los ataques disponibles.
- * Cada ataque tiene:
- * - id:     coincide con el id del <button> en el HTML
- * - nombre: nombre mostrado en los mensajes
- * - emoji:  ícono del ataque
- * - poder:  número que se compara con el del oponente
+ * ATAQUES: array de los 4 ataques disponibles.
+ * id → coincide con el id del <button> en el HTML.
+ * poder → número que se compara con el del CPU para decidir el turno.
  */
 const ATAQUES = [
   { id: "boton-fuego",  nombre: "Fuego",  emoji: "🔥", poder: 4 },
@@ -74,371 +90,348 @@ const ATAQUES = [
   { id: "boton-aire",   nombre: "Aire",   emoji: "🌪️", poder: 3 }
 ];
 
-// ─────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────
 //  2. ESTADO GLOBAL DEL JUEGO
-// ─────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────
 
 /**
- * El estado concentra todas las variables que cambian durante
- * el juego. Tener un objeto único hace fácil el reseteo.
+ * Un solo objeto centraliza todas las variables que cambian.
+ * Así el reinicio es simple: restaurar cada propiedad.
  */
 let estado = {
-  personajeJugador:  null,  // objeto del personaje elegido (de PERSONAJES)
-  personajeOponente: null,  // objeto del personaje del oponente (aleatorio)
-  vidasJugador:      3,     // vidas iniciales del jugador
-  vidasOponente:     3,     // vidas iniciales del oponente
-  juegoTerminado:    false  // bandera: true cuando alguien llega a 0 vidas
+  personajeJugador:  null,   // objeto del PERSONAJES elegido
+  personajeOponente: null,   // objeto del oponente (aleatorio)
+  vidasJugador:      3,      // vidas restantes del jugador
+  vidasOponente:     3,      // vidas restantes del oponente
+  ronda:             1,      // contador de rondas
+  juegoTerminado:    false   // true cuando alguien llega a 0 vidas
 };
 
-// ─────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────
 //  3. REFERENCIAS AL DOM
-// ─────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────
 
 // Secciones que se muestran/ocultan durante el juego
-const secPersonaje    = document.getElementById("seleccionar-personaje");
-const secAtaque       = document.getElementById("seleccionar-ataque");
-const secMensajes     = document.getElementById("mensajes");
-const secResultado    = document.getElementById("resultado-final");
-const secReiniciar    = document.getElementById("reiniciar");
+const secPersonaje  = document.getElementById("seleccionar-personaje");
+const secAtaque     = document.getElementById("seleccionar-ataque");
+const secMensajes   = document.getElementById("mensajes");
+const secResultado  = document.getElementById("resultado-final");
+const secReiniciar  = document.getElementById("reiniciar");
 
-// Elementos de texto dinámico (vidas y mensajes)
-const spanVidasJugador        = document.getElementById("vidas-jugador-num");
-const spanVidasOponente       = document.getElementById("vidas-oponente-num");
-const spanIconosJugador       = document.getElementById("vidas-jugador-iconos");
-const spanIconosOponente      = document.getElementById("vidas-oponente-iconos");
-const divMensaje              = document.getElementById("mensaje-texto");
-const divResultadoTexto       = document.getElementById("resultado-texto");
-const divResultadoDetalle     = document.getElementById("resultado-detalle");
-const spanNombreJugador       = document.getElementById("nombre-jugador");
-const spanEmojiJugador        = document.getElementById("emoji-jugador");
-const spanEmojiOponente       = document.getElementById("emoji-oponente");
+// Elementos dinámicos del HUD
+const spanVidasJugador   = document.getElementById("vidas-jugador-num");
+const spanVidasOponente  = document.getElementById("vidas-oponente-num");
+const spanIconosJugador  = document.getElementById("vidas-jugador-iconos");
+const spanIconosOponente = document.getElementById("vidas-oponente-iconos");
+const barraHPJugador     = document.getElementById("hp-jugador-barra");
+const barraHPOponente    = document.getElementById("hp-oponente-barra");
+const divMensaje         = document.getElementById("mensaje-texto");
+const divResultExpresion = document.getElementById("resultado-expresion");
+const divResultadoTexto  = document.getElementById("resultado-texto");
+const divResultadoDet    = document.getElementById("resultado-detalle");
+const spanNombreJugador  = document.getElementById("nombre-jugador");
+const divImgJugador      = document.getElementById("img-jugador");
+const divImgOponente     = document.getElementById("img-oponente");
+const divRonda           = document.getElementById("hud-ronda");
 
-// ─────────────────────────────────────────────
-//  4. FUNCIÓN: SELECCIONAR PERSONAJE JUGADOR
-// ─────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────
+//  4. SELECCIONAR PERSONAJE JUGADOR
+// ─────────────────────────────────────────────────────────
 
 /**
  * seleccionarPersonajeJugador()
  *
- * Lee cuál radio button está marcado y guarda el personaje
- * elegido en el estado. Luego muestra la sección de batalla.
+ * Lee cuál <input type="radio"> está marcado.
+ * Guarda el personaje en el estado.
+ * Muestra la sección de batalla con las imágenes de los personajes.
  *
- * Se activa con el botón "Seleccionar".
+ * Se activa con el botón "¡ENTRAR AL COMBATE!"
  */
 function seleccionarPersonajeJugador() {
-  // Buscar cuál input tipo radio está marcado (checked)
+  // Buscar el radio que está checked
   let valorSeleccionado = null;
-
-  // querySelectorAll devuelve todos los radio del grupo "personaje"
-  const radios = document.querySelectorAll('input[name="personaje"]');
-
-  radios.forEach(function(radio) {
-    if (radio.checked) {
-      valorSeleccionado = radio.value; // guarda "zuko", "katara", etc.
-    }
+  document.querySelectorAll('input[name="personaje"]').forEach(function(radio) {
+    if (radio.checked) valorSeleccionado = radio.value;
   });
 
-  // Si ninguno fue seleccionado, alertamos y salimos
+  // Validar que se haya elegido uno
   if (!valorSeleccionado) {
-    // Usamos alert (igual que en el código original)
-    alert("⚠️ ¡Debes seleccionar un personaje!");
-    return; // detiene la función aquí
+    alert("⚠️ ¡Debes seleccionar un guerrero elemental antes de combatir!");
+    return;
   }
 
-  // Guardar el personaje en el estado usando la clave
-  estado.personajeJugador = PERSONAJES[valorSeleccionado];
+  // Guardar personaje del jugador en el estado
+  estado.personajeJugador  = PERSONAJES[valorSeleccionado];
 
-  // Seleccionar oponente aleatorio
+  // La CPU elige un personaje diferente al del jugador
   estado.personajeOponente = seleccionarOponenteAleatorio(valorSeleccionado);
 
-  // Mostrar frase de confirmación al jugador
-  alert(`✅ ${estado.personajeJugador.frase}`);
+  // Confirmación visual con expresión del personaje
+  alert(`✅ ${estado.personajeJugador.expresiones.gana.split("!")[0]}!\n¡Tu personaje es ${estado.personajeJugador.nombre}!`);
 
-  // Actualizar el DOM con los datos del jugador y oponente
-  spanNombreJugador.textContent  = estado.personajeJugador.nombre.toUpperCase();
-  spanEmojiJugador.textContent   = estado.personajeJugador.emoji;
-  spanEmojiOponente.textContent  = estado.personajeOponente.emoji;
+  // Actualizar el HUD con los personajes elegidos
+  spanNombreJugador.textContent = estado.personajeJugador.nombre.toUpperCase();
 
-  // Ocultar la sección de selección y mostrar la de batalla
+  // Mostrar imágenes reales en el HUD (en lugar de emojis)
+  divImgJugador.innerHTML  = `<img src="${estado.personajeJugador.imagen}"
+    alt="${estado.personajeJugador.nombre}" class="hud-char-real" />`;
+  divImgOponente.innerHTML = `<img src="${estado.personajeOponente.imagen}"
+    alt="${estado.personajeOponente.nombre}" class="hud-char-real" />`;
+
+  // Ocultar selección, mostrar batalla y mensajes
   secPersonaje.classList.add("oculto");
   secAtaque.classList.remove("oculto");
   secMensajes.classList.remove("oculto");
+
+  // Inicializar las barras de HP al 100%
+  barraHPJugador.style.width  = "100%";
+  barraHPOponente.style.width = "100%";
 }
 
-// ─────────────────────────────────────────────
-//  5. FUNCIÓN: SELECCIONAR OPONENTE ALEATORIO
-// ─────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────
+//  5. OPONENTE ALEATORIO
+// ─────────────────────────────────────────────────────────
 
 /**
  * seleccionarOponenteAleatorio(excluir)
  *
- * Elige un personaje distinto al del jugador de forma aleatoria.
- * Math.random() devuelve un número entre 0 y 1.
- * Math.floor() redondea hacia abajo.
+ * Obtiene las claves del objeto PERSONAJES, filtra la del jugador
+ * y elige una al azar con Math.random().
  *
  * @param {string} excluir - key del personaje ya elegido
- * @returns {object} - personaje oponente
+ * @returns {object} personaje oponente
  */
 function seleccionarOponenteAleatorio(excluir) {
-  // Obtener las claves del objeto PERSONAJES: ["zuko", "katara", "aang", "toph"]
-  const claves = Object.keys(PERSONAJES);
-
-  // Filtrar para excluir el personaje del jugador
-  const disponibles = claves.filter(function(clave) {
-    return clave !== excluir;
-  });
-
-  // Índice aleatorio entre 0 y disponibles.length - 1
-  const indiceAleatorio = Math.floor(Math.random() * disponibles.length);
-
-  // Retornar el personaje usando la clave aleatoria
-  return PERSONAJES[disponibles[indiceAleatorio]];
+  const disponibles = Object.keys(PERSONAJES).filter(k => k !== excluir);
+  const idx = Math.floor(Math.random() * disponibles.length);
+  return PERSONAJES[disponibles[idx]];
 }
 
-// ─────────────────────────────────────────────
-//  6. FUNCIÓN: ATAQUE DEL OPONENTE (CPU)
-// ─────────────────────────────────────────────
-
-/**
- * ataqueOponenteAleatorio()
- *
- * La CPU elige un ataque al azar del array ATAQUES.
- * Simula al oponente.
- *
- * @returns {object} - objeto ataque aleatorio
- */
-function ataqueOponenteAleatorio() {
-  const indice = Math.floor(Math.random() * ATAQUES.length);
-  return ATAQUES[indice]; // devuelve { nombre, emoji, poder }
-}
-
-// ─────────────────────────────────────────────
-//  7. FUNCIÓN: EJECUTAR UN ATAQUE
-// ─────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────
+//  6. EJECUTAR ATAQUE
+// ─────────────────────────────────────────────────────────
 
 /**
  * ejecutarAtaque(idAtaque)
  *
- * Se llama cuando el jugador hace clic en un botón de ataque.
- * Compara el poder del jugador con el del oponente y actualiza
- * vidas y mensajes.
+ * Compara el poder del jugador con el de la CPU.
+ * Actualiza vidas, barras HP, ronda y mensaje de turno.
+ * Llama a verificarFinJuego() al final.
  *
- * @param {string} idAtaque - id del botón pulsado
+ * @param {string} idAtaque - id del <button> pulsado
  */
 function ejecutarAtaque(idAtaque) {
-  // Si el juego ya terminó, no hacer nada
-  if (estado.juegoTerminado) return;
+  if (estado.juegoTerminado) return; // bloquear si el juego ya terminó
 
-  // Buscar el objeto del ataque del jugador por su id
-  const ataquejugador = ATAQUES.find(function(a) {
-    return a.id === idAtaque;
-  });
+  // Buscar el ataque del jugador en el array ATAQUES
+  const ataqueJug = ATAQUES.find(a => a.id === idAtaque);
 
-  // El oponente elige su ataque al azar
-  const ataqueOponente = ataqueOponenteAleatorio();
+  // La CPU elige su ataque al azar
+  const ataqueCPU = ATAQUES[Math.floor(Math.random() * ATAQUES.length)];
 
-  // ── COMPARAR PODERES ──────────────────────
+  // ── COMPARAR PODERES Y GENERAR EXPRESIÓN ──────────────
+  let expresion = "";
   let mensajeTurno = "";
-  let jugadorPierdeVida  = false;
-  let oponentePierdeVida = false;
 
-  if (ataquejugador.poder > ataqueOponente.poder) {
-    // Jugador gana este turno → el oponente pierde vida
-    oponentePierdeVida = true;
+  if (ataqueJug.poder > ataqueCPU.poder) {
+    // Jugador gana el turno
+    estado.vidasOponente--;
+    expresion    = estado.personajeJugador.expresiones.gana;
     mensajeTurno = `
-      ${estado.personajeJugador.nombre} atacó con ${ataquejugador.emoji} ${ataquejugador.nombre} 
-      (Poder ${ataquejugador.poder}) y el oponente respondió con 
-      ${ataqueOponente.emoji} ${ataqueOponente.nombre} (Poder ${ataqueOponente.poder}).
-      <br><strong>🎉 ¡GANASTE el turno! </strong>
+      <strong>${estado.personajeJugador.nombre}</strong> atacó con
+      ${ataqueJug.emoji} <strong>${ataqueJug.nombre}</strong> (Poder ${ataqueJug.poder})
+      y el oponente con ${ataqueCPU.emoji} ${ataqueCPU.nombre} (Poder ${ataqueCPU.poder}).
+      <br><span class="msg-victoria">🏆 ¡GANASTE el turno! ${expresion}</span>
     `;
-  } else if (ataquejugador.poder < ataqueOponente.poder) {
-    // Oponente gana este turno → el jugador pierde vida
-    jugadorPierdeVida = true;
+  } else if (ataqueJug.poder < ataqueCPU.poder) {
+    // CPU gana el turno
+    estado.vidasJugador--;
+    expresion    = estado.personajeJugador.expresiones.pierde;
     mensajeTurno = `
-      ${estado.personajeJugador.nombre} atacó con ${ataquejugador.emoji} ${ataquejugador.nombre} 
-      (Poder ${ataquejugador.poder}) pero el oponente atacó con 
-      ${ataqueOponente.emoji} ${ataqueOponente.nombre} (Poder ${ataqueOponente.poder}).
-      <br><strong>😵 ¡Perdiste el turno! </strong>
+      <strong>${estado.personajeJugador.nombre}</strong> atacó con
+      ${ataqueJug.emoji} <strong>${ataqueJug.nombre}</strong> (Poder ${ataqueJug.poder})
+      pero la CPU usó ${ataqueCPU.emoji} ${ataqueCPU.nombre} (Poder ${ataqueCPU.poder}).
+      <br><span class="msg-derrota">💔 ¡Perdiste el turno! ${expresion}</span>
     `;
+    sacudirElemento(secAtaque); // animación de sacudida al perder vida
   } else {
-    // Empate → nadie pierde vida
+    // Empate de turno
+    expresion    = estado.personajeJugador.expresiones.empata;
     mensajeTurno = `
-      ${estado.personajeJugador.nombre} atacó con ${ataquejugador.emoji} ${ataquejugador.nombre} 
-      y el oponente con ${ataqueOponente.emoji} ${ataqueOponente.nombre}. ¡Mismo poder!
-      <br><strong>🤝 ¡EMPATE! </strong>
+      ${ataqueJug.emoji} <strong>${ataqueJug.nombre}</strong> (${ataqueJug.poder}) vs
+      ${ataqueCPU.emoji} <strong>${ataqueCPU.nombre}</strong> (${ataqueCPU.poder}).
+      <br><span class="msg-empate">🤝 ¡EMPATE de turno! ${expresion}</span>
     `;
   }
 
-  // ── ACTUALIZAR VIDAS ──────────────────────
-  if (jugadorPierdeVida) {
-    estado.vidasJugador--;           // restar una vida al jugador
-    sacudirElemento(secAtaque);      // animación de sacudida
-  }
-  if (oponentePierdeVida) {
-    estado.vidasOponente--;          // restar una vida al oponente
-  }
-
-  // Mostrar el mensaje del turno en el DOM
+  // Mostrar el mensaje en el bocadillo
   divMensaje.innerHTML = mensajeTurno;
 
-  // Actualizar los números y corazones en pantalla
+  // Avanzar el contador de ronda
+  estado.ronda++;
+  divRonda.textContent = `Ronda ${estado.ronda}`;
+
+  // Actualizar el DOM (vidas, corazones y barras HP)
   actualizarVidasDOM();
 
-  // Verificar si el juego terminó
+  // Comprobar si alguien llegó a 0 vidas
   verificarFinJuego();
 }
 
-// ─────────────────────────────────────────────
-//  8. FUNCIÓN: ACTUALIZAR VIDAS EN EL DOM
-// ─────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────
+//  7. ACTUALIZAR VIDAS EN EL DOM
+// ─────────────────────────────────────────────────────────
 
 /**
  * actualizarVidasDOM()
  *
- * Sincroniza los <span> del HTML con los valores del estado.
- * Genera los corazones como string de emojis.
+ * Sincroniza los <span> de vidas, los corazones y las barras HP
+ * con los valores actuales del estado.
  */
 function actualizarVidasDOM() {
-  // Actualizar números
+  // Números de vidas
   spanVidasJugador.textContent  = estado.vidasJugador;
   spanVidasOponente.textContent = estado.vidasOponente;
 
-  // Generar corazones: "❤️❤️❤️" para 3 vidas, "❤️❤️💔" para 2, etc.
+  // Corazones emoji: ❤️ por vida restante, 💔 por vida perdida
   spanIconosJugador.textContent  = generarCorazones(estado.vidasJugador,  3);
   spanIconosOponente.textContent = generarCorazones(estado.vidasOponente, 3);
+
+  // Barras HP: porcentaje = (vidas / 3) * 100
+  const pctJug = Math.max(0, (estado.vidasJugador  / 3) * 100);
+  const pctOpo = Math.max(0, (estado.vidasOponente / 3) * 100);
+  barraHPJugador.style.width  = pctJug + "%";
+  barraHPOponente.style.width = pctOpo + "%";
+
+  // La barra cambia de color cuando queda poca vida
+  if (pctJug <= 33)  barraHPJugador.classList.add("hp-critico");
+  else               barraHPJugador.classList.remove("hp-critico");
+  if (pctOpo <= 33)  barraHPOponente.classList.add("hp-critico");
+  else               barraHPOponente.classList.remove("hp-critico");
 }
 
 /**
- * generarCorazones(vidasActuales, vidasMax)
- *
- * Devuelve un string de emojis de corazón:
- * ❤️ por cada vida que queda, 💔 por cada vida perdida.
- *
- * @param {number} actuales - vidas restantes
- * @param {number} max      - vidas máximas iniciales
- * @returns {string}
+ * generarCorazones(actuales, max)
+ * Devuelve string de emojis: ❤️ por vida que queda, 💔 por vida perdida.
  */
 function generarCorazones(actuales, max) {
-  let resultado = "";
+  let str = "";
   for (let i = 0; i < max; i++) {
-    resultado += (i < actuales) ? "❤️" : "💔";
+    str += (i < actuales) ? "❤️" : "💔";
   }
-  return resultado;
+  return str;
 }
 
-// ─────────────────────────────────────────────
-//  9. FUNCIÓN: SACUDIR ELEMENTO (ANIMACIÓN)
-// ─────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────
+//  8. ANIMACIÓN DE SACUDIDA AL PERDER VIDA
+// ─────────────────────────────────────────────────────────
 
 /**
- * sacudirElemento(elemento)
+ * sacudirElemento(el)
  *
- * Agrega la clase CSS "sacudir" al elemento, que dispara
- * la animación de keyframes. La quita después de 400ms
- * para que pueda volver a aplicarse en el siguiente golpe.
- *
- * @param {HTMLElement} elemento
+ * Agrega la clase CSS "sacudir" que dispara la animación @keyframes.
+ * La quita 450ms después para que pueda dispararse de nuevo.
  */
-function sacudirElemento(elemento) {
-  elemento.classList.add("sacudir");
-  setTimeout(function() {
-    elemento.classList.remove("sacudir");
-  }, 400);
+function sacudirElemento(el) {
+  el.classList.add("sacudir");
+  setTimeout(() => el.classList.remove("sacudir"), 450);
 }
 
-// ─────────────────────────────────────────────
-//  10. FUNCIÓN: VERIFICAR FIN DE JUEGO
-// ─────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────
+//  9. VERIFICAR FIN DEL JUEGO
+// ─────────────────────────────────────────────────────────
 
 /**
  * verificarFinJuego()
  *
- * Comprueba si alguno de los jugadores llegó a 0 vidas.
- * Si el juego terminó:
- * - Bloquea el juego (estado.juegoTerminado = true)
- * - Oculta los botones de ataque
- * - Muestra la sección de resultado
- * - Muestra el botón de reinicio
+ * Comprueba si alguno (o ambos) llegaron a 0 vidas.
+ * Muestra el resultado con la expresión del personaje.
  */
 function verificarFinJuego() {
-  let mensajeFinal   = "";
-  let detalleFinal   = "";
-  let terminado      = false;
+  let terminado   = false;
+  let textoFinal  = "";
+  let detalle     = "";
+  let expresionFinal = "";
 
   if (estado.vidasJugador <= 0 && estado.vidasOponente <= 0) {
-    // Empate total (ambos llegaron a 0 al mismo tiempo)
-    mensajeFinal = "🤝 ¡EMPATE TOTAL!";
-    detalleFinal = "¡Nadie gana, como cuando juegas tú!";
-    terminado    = true;
+    // Empate total
+    terminado      = true;
+    textoFinal     = "🤝 ¡EMPATE TOTAL!";
+    expresionFinal = "😤 " + estado.personajeJugador.expresiones.empata;
+    detalle        = `¡Los dos guerreros cayeron al mismo tiempo! ¡Rematch!`;
 
   } else if (estado.vidasOponente <= 0) {
-    // El jugador ganó
-    mensajeFinal = `🏆 ¡${estado.personajeJugador.nombre.toUpperCase()} GANÓ!`;
-    detalleFinal = `¡Excelente, ${estado.personajeJugador.nombre}! 
-                   ¡Eres tan genial! 🎉`;
-    terminado    = true;
+    // Jugador ganó
+    terminado      = true;
+    textoFinal     = `🏆 ¡${estado.personajeJugador.nombre.toUpperCase()} GANÓ!`;
+    expresionFinal = "🌟 " + estado.personajeJugador.expresiones.gana;
+    detalle        = `¡Dominaste los elementos y venciste al oponente en ${estado.ronda - 1} rondas!`;
 
   } else if (estado.vidasJugador <= 0) {
-    // El oponente ganó
-    mensajeFinal = "😵 ¡PERDISTE!";
-    detalleFinal = `¡Intenta de nuevo! 🍩`;
-    terminado    = true;
+    // CPU ganó
+    terminado      = true;
+    textoFinal     = "💀 ¡DERROTA!";
+    expresionFinal = "😤 " + estado.personajeJugador.expresiones.pierde;
+    detalle        = `¡El oponente te venció! Entrena más y vuelve más fuerte, ${estado.personajeJugador.nombre}.`;
   }
 
-  // Si el juego terminó, actualizar la pantalla
   if (terminado) {
     estado.juegoTerminado = true;
 
-    // Mostrar el resultado en el DOM
-    divResultadoTexto.innerHTML   = mensajeFinal;
-    divResultadoDetalle.innerHTML = detalleFinal;
+    // Escribir resultado en el DOM
+    divResultExpresion.textContent = expresionFinal;
+    divResultadoTexto.innerHTML    = textoFinal;
+    divResultadoDet.innerHTML      = detalle;
 
-    // Ocultar ataques, mostrar resultado y reinicio
+    // Ocultar sección de ataque, mostrar resultado y reinicio
     secAtaque.classList.add("oculto");
     secResultado.classList.remove("oculto");
     secReiniciar.classList.remove("oculto");
   }
 }
 
-// ─────────────────────────────────────────────
-//  11. FUNCIÓN: REINICIAR EL JUEGO
-// ─────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────
+//  10. REINICIAR EL JUEGO
+// ─────────────────────────────────────────────────────────
 
 /**
  * reiniciarJuego()
  *
- * Restablece el estado a los valores iniciales y vuelve
- * a mostrar la pantalla de selección de personaje.
- * No recarga la página: solo resetea variables y el DOM.
+ * Resetea el estado y el DOM al estado inicial.
+ * No recarga la página: solo restaura variables y vuelve
+ * a mostrar la sección de selección de personaje.
  */
 function reiniciarJuego() {
-  // Restablecer estado
+  // Restaurar estado
   estado.personajeJugador  = null;
   estado.personajeOponente = null;
   estado.vidasJugador      = 3;
   estado.vidasOponente     = 3;
+  estado.ronda             = 1;
   estado.juegoTerminado    = false;
 
-  // Resetear los corazones y números visualmente
-  spanVidasJugador.textContent  = "3";
-  spanVidasOponente.textContent = "3";
+  // Restaurar DOM
+  spanVidasJugador.textContent   = "3";
+  spanVidasOponente.textContent  = "3";
   spanIconosJugador.textContent  = "❤️❤️❤️";
   spanIconosOponente.textContent = "❤️❤️❤️";
+  barraHPJugador.style.width     = "100%";
+  barraHPOponente.style.width    = "100%";
+  barraHPJugador.classList.remove("hp-critico");
+  barraHPOponente.classList.remove("hp-critico");
   spanNombreJugador.textContent  = "TÚ";
-  spanEmojiJugador.textContent   = "🤺";
-  spanEmojiOponente.textContent  = "🤖";
+  divImgJugador.innerHTML        = "🤺";
+  divImgOponente.innerHTML       = "🤖";
+  divRonda.textContent           = "Ronda 1";
+  divMensaje.innerHTML           = "¡Elige tu ataque para comenzar!";
+  divResultExpresion.textContent = "";
+  divResultadoTexto.innerHTML    = "";
+  divResultadoDet.innerHTML      = "";
 
-  // Limpiar mensajes
-  divMensaje.innerHTML        = "¡Espera el primer ataque!";
-  divResultadoTexto.innerHTML = "";
-  divResultadoDetalle.innerHTML = "";
+  // Desmarcar todos los radios
+  document.querySelectorAll('input[name="personaje"]').forEach(r => r.checked = false);
 
-  // Desmarcar todos los radio buttons
-  document.querySelectorAll('input[name="personaje"]').forEach(function(r) {
-    r.checked = false;
-  });
-
-  // Mostrar selección de personaje; ocultar el resto
+  // Mostrar selección; ocultar el resto
   secPersonaje.classList.remove("oculto");
   secAtaque.classList.add("oculto");
   secMensajes.classList.add("oculto");
@@ -446,30 +439,29 @@ function reiniciarJuego() {
   secReiniciar.classList.add("oculto");
 }
 
-// ─────────────────────────────────────────────
-//  12. REGISTRAR EVENT LISTENERS
-// ─────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────
+//  11. REGISTRO DE EVENTOS
+// ─────────────────────────────────────────────────────────
 
 /**
- * addEventListener asocia una función a un evento del DOM.
- * Sintaxis: elemento.addEventListener('evento', función)
+ * addEventListener('click', función):
+ * Asocia una función a un clic. Se ejecuta cada vez que el usuario pulsa.
  *
- * Usamos 'click' para botones.
- * La función se ejecuta cada vez que el usuario hace clic.
+ * Para los 4 botones de ataque usamos forEach para no repetir 4 líneas.
  */
 
 // Botón seleccionar personaje
 document.getElementById("boton-personaje")
-  .addEventListener('click', seleccionarPersonajeJugador);
+  .addEventListener("click", seleccionarPersonajeJugador);
 
-// Botones de ataque: iteramos el array ATAQUES para no repetir código
+// Botones de ataque (iterar el array evita repetir código)
 ATAQUES.forEach(function(ataque) {
   document.getElementById(ataque.id)
-    .addEventListener('click', function() {
-      ejecutarAtaque(ataque.id); // pasamos el id del botón pulsado
+    .addEventListener("click", function() {
+      ejecutarAtaque(ataque.id);
     });
 });
 
 // Botón reiniciar
 document.getElementById("boton-reiniciar")
-  .addEventListener('click', reiniciarJuego);
+  .addEventListener("click", reiniciarJuego);

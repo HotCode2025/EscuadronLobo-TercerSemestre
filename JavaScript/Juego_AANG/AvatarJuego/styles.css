@@ -1,25 +1,37 @@
 /*
   ============================================================
-  styles.css — LOS ELEMENTALES: La Leyenda de Aang
-  Estética: videojuego de acción anime oscuro + VR
-  Paleta: azul marino profundo, amarillo dorado, neones
-  por elemento. Arte de personajes integrado como sprites.
+  styles.css — LOS ELEMENTOS: La Leyenda de Aang
+  Estética: videojuego de acción anime — azul profundo + dorado
+  Personajes reales con imágenes individuales (PNG con fondo blanco)
+  ============================================================
+  Secciones:
+  1. Variables y Reset
+  2. Body y fondos
+  3. Hero
+  4. Escuadrón Lobo badge
+  5. Tarjetas de personaje (con imágenes reales)
+  6. HUD de batalla
+  7. Botones de ataque
+  8. Mensajes con expresiones
+  9. Resultado final
+  10. Navegación y footer
+  11. Animaciones
+  12. Responsive
   ============================================================
 */
 
-@import url('https://fonts.googleapis.com/css2?family=Bangers&family=Fredoka+One&family=Nunito:wght@400;700;800;900&display=swap');
-
-/* ── VARIABLES ───────────────────────────────────────────── */
+/* ── 1. VARIABLES ────────────────────────────────────────── */
 :root {
+  /* Paleta principal */
   --amarillo:     #FFD90F;
-  --naranja:      #FF8C00;
-  --bg-oscuro:    #0d0f1a;
-  --bg-medio:     #151929;
-  --bg-panel:     #1a1f35;
-  --azul-acento:  #2a3a6e;
-  --borde:        #2e3a5e;
+  --dorado-osc:   #FF8C00;
+  --bg-oscuro:    #0a0c18;
+  --bg-medio:     #0f1220;
+  --bg-panel:     rgba(19, 23, 38, 0.88);
+  --borde:        #252d4a;
+  --borde-bright: #2e3a5e;
 
-  /* Colores de elemento */
+  /* Colores por elemento */
   --c-fuego:   #FF4500;
   --c-agua:    #00BFFF;
   --c-tierra:  #32CD32;
@@ -31,261 +43,232 @@
   --neon-magenta: #FF00CC;
   --neon-green:   #39FF14;
 
-  --font-titulo:   'Bangers', cursive;
-  --font-sub:      'Fredoka One', cursive;
-  --font-body:     'Nunito', sans-serif;
+  /* Tipografías */
+  --font-titulo: 'Bangers', cursive;
+  --font-sub:    'Fredoka One', cursive;
+  --font-body:   'Nunito', sans-serif;
 
-  --shadow-hard: 4px 4px 0 #000;
-  --outline:     3px solid #000;
-  --radius:      14px;
-  --radius-lg:   22px;
+  --shadow: 4px 4px 0 #000;
+  --radius: 16px;
+  --radius-lg: 22px;
 }
 
-/* ── RESET ───────────────────────────────────────────────── */
+/* ── 2. RESET Y BODY ─────────────────────────────────────── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 .oculto { display: none !important; }
 
-/* ── BODY ────────────────────────────────────────────────── */
+/*
+  Body: la imagen los_elementos.png es el fondo real de toda la página.
+  background-attachment: fixed → queda fija mientras se hace scroll (efecto parallax).
+  background-size: cover        → cubre toda la pantalla sin distorsión.
+  background-position: center   → perfectamente centrada.
+*/
 body {
   font-family: var(--font-body);
-  background: var(--bg-oscuro);
-  color: #e0e8ff;
+  color: #dde6ff;
   min-height: 100vh;
   overflow-x: hidden;
-  /* Textura de grilla estilo videojuego */
-  background-image:
-    linear-gradient(rgba(42,58,110,0.15) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(42,58,110,0.15) 1px, transparent 1px);
-  background-size: 40px 40px;
+  background-color: #080a12;
+  background-image: url('los_elementos.png');
+  background-size: cover;
+  background-position: center center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
 }
 
-/* Scanlines VR sobre todo */
+/* Scanlines VR finos sobre todo */
 body::before {
   content: '';
   position: fixed; inset: 0;
   pointer-events: none; z-index: 9999;
   background: repeating-linear-gradient(
     0deg, transparent, transparent 3px,
-    rgba(0,180,255,0.025) 3px, rgba(0,180,255,0.025) 4px
+    rgba(0,180,255,.018) 3px, rgba(0,180,255,.018) 4px
   );
 }
 
-/* Marco neón VR */
+/* Marco brillante VR */
 body::after {
   content: '';
   position: fixed; inset: 0;
   pointer-events: none; z-index: 9998;
-  box-shadow:
-    inset 0 0 60px rgba(0,255,255,0.07),
-    inset 0 0 3px rgba(255,215,0,0.15);
-  border: 2px solid rgba(0,255,255,0.12);
+  border: 2px solid rgba(0,255,255,.1);
+  box-shadow: inset 0 0 50px rgba(0,255,255,.04);
 }
 
-/* ── FONDO DE ARTE ───────────────────────────────────────── */
-/* La imagen del juego se muestra como fondo fijo difuminado */
-.art-background {
-  position: fixed;
-  inset: 0;
-  background: url('avatar_art.png') center top / cover no-repeat;
-  opacity: 0.07;
-  z-index: 0;
-  pointer-events: none;
-  filter: saturate(0.5) blur(2px);
-}
+/*
+  .art-background y .art-overlay ya no son necesarios como capas separadas:
+  el fondo está directo en el body. Las dejamos vacías para no romper el HTML.
+*/
+.art-background { display: none; }
+.art-overlay    { display: none; }
 
-.art-overlay {
-  position: fixed; inset: 0; z-index: 0; pointer-events: none;
-  background: radial-gradient(ellipse 90% 80% at 50% 30%,
-    transparent 40%, var(--bg-oscuro) 100%);
-}
-
-/* Asegurar que el contenido quede sobre el fondo */
+/* Todos los elementos sobre los fondos */
 header, section, nav, footer { position: relative; z-index: 1; }
 
-/* ── LAYOUT GENERAL ─────────────────────────────────────── */
+/* ── LAYOUT ──────────────────────────────────────────────── */
 .seccion {
   max-width: 920px;
   margin: 0 auto 1.75rem;
   padding: 1.75rem;
-  background: var(--bg-panel);
+  /* Panel semitransparente para que el fondo se vea a través */
+  background: rgba(13, 16, 32, 0.82);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   border: 1px solid var(--borde);
   border-radius: var(--radius-lg);
   box-shadow:
-    0 0 0 1px rgba(255,215,0,0.06),
-    0 8px 40px rgba(0,0,0,0.6),
-    inset 0 1px 0 rgba(255,255,255,0.05);
+    0 0 0 1px rgba(255,215,0,.06),
+    0 10px 50px rgba(0,0,0,.5),
+    inset 0 1px 0 rgba(255,255,255,.04);
 }
 
-/* ── HERO ────────────────────────────────────────────────── */
+/* ── 3. HERO ──────────────────────────────────────────────── */
+/*
+  El hero ya NO tiene fondo sólido propio.
+  La imagen del body se ve directamente a través del hero.
+  Solo tiene un gradiente muy suave arriba para que el texto sea legible.
+*/
 .hero {
   text-align: center;
-  padding: 2rem 1.5rem 0;
+  padding: 2.5rem 1.5rem 2rem;
   background: linear-gradient(180deg,
-    #08090f 0%, #0d1020 40%, #101828 70%, #0c1520 100%);
-  border-bottom: 2px solid rgba(255,215,0,0.2);
-  overflow: hidden;
-  position: relative;
+    rgba(6,8,18,0.75) 0%,
+    rgba(6,8,18,0.30) 50%,
+    rgba(6,8,18,0.10) 80%,
+    transparent 100%);
+  border-bottom: none;
+  overflow: visible;
 }
 
-/* ── ICONOS ELEMENTOS ────────────────────────────────────── */
+/* Iconos de elementos con rebote individual */
 .elementos-iconos {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-  margin-bottom: 0.75rem;
+  display: flex; justify-content: center; gap: 1rem;
+  margin-bottom: 0.8rem;
 }
 
 .elem-icono {
-  width: 48px; height: 48px;
-  border-radius: 50%;
+  width: 46px; height: 46px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  font-size: 1.4rem;
-  border: 2px solid;
+  font-size: 1.35rem; border: 2px solid;
   animation: rebote 2.5s ease-in-out infinite;
 }
 
-.aire-ico   { background: rgba(0,200,255,0.15); border-color: var(--c-aire);
-              box-shadow: 0 0 12px rgba(0,200,255,0.4); animation-delay: 0s; }
-.agua-ico   { background: rgba(0,100,255,0.15); border-color: var(--c-agua);
-              box-shadow: 0 0 12px rgba(0,180,255,0.4); animation-delay: 0.3s; }
-.tierra-ico { background: rgba(50,150,0,0.15);  border-color: var(--c-tierra);
-              box-shadow: 0 0 12px rgba(50,200,0,0.4); animation-delay: 0.6s; }
-.fuego-ico  { background: rgba(255,80,0,0.15);  border-color: var(--c-fuego);
-              box-shadow: 0 0 12px rgba(255,80,0,0.4); animation-delay: 0.9s; }
+.aire-ico   { background: rgba(0,200,255,.15); border-color: var(--c-aire);
+              box-shadow: 0 0 12px rgba(0,200,255,.4); animation-delay:0s; }
+.agua-ico   { background: rgba(0,100,255,.15); border-color: var(--c-agua);
+              box-shadow: 0 0 12px rgba(0,180,255,.4); animation-delay:.3s; }
+.tierra-ico { background: rgba(50,150,0,.15);  border-color: var(--c-tierra);
+              box-shadow: 0 0 12px rgba(50,200,0,.4); animation-delay:.6s; }
+.fuego-ico  { background: rgba(255,80,0,.15);  border-color: var(--c-fuego);
+              box-shadow: 0 0 12px rgba(255,80,0,.4); animation-delay:.9s; }
 
-/* ── TÍTULO ──────────────────────────────────────────────── */
+/* Título h1 */
 .hero-titulo {
   display: flex; flex-direction: column; align-items: center;
-  gap: 0.15rem; margin-bottom: 0.5rem;
+  gap: .15rem; margin-bottom: .5rem;
 }
 
 .titulo-los {
   font-family: var(--font-titulo);
-  font-size: clamp(1.2rem, 3vw, 2rem);
-  color: #c8d8ff;
-  letter-spacing: 0.5em;
-  text-transform: uppercase;
+  font-size: clamp(1.1rem, 3vw, 2rem);
+  color: #b0c0e0; letter-spacing: .5em;
 }
 
+  /* "ELEMENTOS" — degradado dorado como en la imagen del juego */
 .titulo-elementales {
   font-family: var(--font-titulo);
   font-size: clamp(3.5rem, 12vw, 7.5rem);
-  letter-spacing: 0.04em;
-  line-height: 0.9;
-  /* Gradiente dorado como en la imagen */
+  letter-spacing: .04em; line-height: .9;
   background: linear-gradient(180deg,
-    #fff5a0 0%, var(--amarillo) 35%, var(--naranja) 70%, #c85a00 100%);
+    #fff8b0 0%, var(--amarillo) 35%, var(--dorado-osc) 70%, #a04000 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  /* Contorno negro estilo cómic */
   filter: drop-shadow(3px 3px 0 #000) drop-shadow(-1px -1px 0 #000);
-  animation: tituloEntrada 0.9s cubic-bezier(.36,1.6,.6,1) both;
+  animation: tituloEntrada .9s cubic-bezier(.36,1.6,.6,1) both;
 }
 
 .titulo-sub {
   font-family: var(--font-sub);
-  font-size: clamp(0.9rem, 2.5vw, 1.3rem);
-  letter-spacing: 0.2em;
-  color: #8aa0cc;
-  margin-top: 0.2rem;
+  font-size: clamp(.9rem, 2.5vw, 1.3rem);
+  letter-spacing: .22em; color: #7a90b8; margin-top: .25rem;
 }
 
 .hero-tagline {
   font-family: var(--font-titulo);
-  font-size: clamp(0.95rem, 2.5vw, 1.3rem);
-  color: var(--neon-cyan);
-  letter-spacing: 0.06em;
-  text-shadow: 0 0 14px rgba(0,255,255,0.5);
+  font-size: clamp(.9rem, 2.5vw, 1.3rem);
+  color: var(--neon-cyan); letter-spacing: .06em;
+  text-shadow: 0 0 14px rgba(0,255,255,.5);
   margin-bottom: 1rem;
 }
 
-/* ── BANNER DE ARTE ──────────────────────────────────────── */
-/* Muestra la franja inferior de la imagen (los personajes en pose de combate) */
-.hero-art-banner {
+/*
+  Espacio en blanco transparente dentro del hero.
+  Deja ver la parte de los personajes de la imagen de fondo
+  antes de que comiencen las secciones de contenido.
+  min-height: 42vh → ocupa ~42% de la altura de la pantalla.
+*/
+.hero-spacer {
+  min-height: 42vh;
   width: 100%;
-  max-width: 820px;
-  margin: 0 auto;
-  overflow: hidden;
-  border-radius: 16px 16px 0 0;
-  border: 2px solid rgba(255,215,0,0.2);
-  border-bottom: none;
-  position: relative;
 }
 
-.hero-art-img {
-  width: 100%;
-  /* Mostrar la parte superior de la imagen donde están los personajes en acción */
-  object-fit: cover;
-  object-position: center 0%;
-  max-height: 280px;
-  display: block;
-  /* Degradado en la parte inferior para que se integre con el fondo */
-  -webkit-mask-image: linear-gradient(180deg, black 50%, transparent 100%);
-  mask-image: linear-gradient(180deg, black 50%, transparent 100%);
-  filter: saturate(1.15) contrast(1.05);
-}
+/* Banner de arte — oculto: la imagen ya está en el fondo del body */
+.hero-art-banner { display: none; }
+.hero-art-img    { display: none; }
 
-/* ── ESCUADRÓN LOBO BADGE ────────────────────────────────── */
+/* ── 4. ESCUADRÓN LOBO BADGE ──────────────────────────────── */
 .equipo-badge {
-  display: inline-flex; align-items: center; gap: 0.7rem;
-  background: rgba(10,12,25,0.85);
-  border: 1px solid rgba(255,215,0,0.3);
+  display: inline-flex; align-items: center; gap: .7rem;
+  background: rgba(8,10,20,.88);
+  border: 1px solid rgba(255,215,0,.28);
   border-radius: 100px;
-  padding: 0.4rem 1.2rem 0.4rem 0.4rem;
+  padding: .45rem 1.2rem .45rem .45rem;
   margin-bottom: 1rem;
-  box-shadow: 0 0 16px rgba(255,215,0,0.15);
+  box-shadow: 0 0 18px rgba(255,215,0,.12);
   backdrop-filter: blur(8px);
 }
 
 .equipo-logo {
-  width: 52px; height: 52px;
-  object-fit: contain;
-  filter: drop-shadow(0 0 8px rgba(120,100,200,0.6));
-  transition: transform 0.3s;
+  width: 52px; height: 52px; object-fit: contain;
+  filter: drop-shadow(0 0 8px rgba(100,80,200,.6));
+  transition: transform .3s;
 }
-.equipo-logo:hover { transform: rotate(-10deg) scale(1.15); }
+.equipo-logo:hover { transform: rotate(-10deg) scale(1.18); }
 
 .equipo-texto { display: flex; flex-direction: column; line-height: 1; }
 
 .equipo-nombre {
   font-family: var(--font-titulo);
-  font-size: 0.85rem;
-  letter-spacing: 0.3em;
-  color: #8899cc;
+  font-size: .82rem; letter-spacing: .32em; color: #7080a8;
 }
 
 .equipo-lobo {
   font-family: var(--font-titulo);
-  font-size: 1.5rem;
-  letter-spacing: 0.15em;
-  background: linear-gradient(135deg, #6699ff, #aa66ff, #4466cc);
+  font-size: 1.5rem; letter-spacing: .15em;
+  background: linear-gradient(135deg, #5588ff, #aa66ff, #3355cc);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  filter: drop-shadow(0 0 6px rgba(100,100,255,0.4));
+  filter: drop-shadow(0 0 6px rgba(100,100,255,.4));
 }
 
-/* ── SECCIONES: ENCABEZADOS ──────────────────────────────── */
+/* ── 5. TARJETAS DE PERSONAJE ─────────────────────────────── */
 .seccion-header { text-align: center; margin-bottom: 1.25rem; }
 
 .seccion-titulo {
   font-family: var(--font-titulo);
-  font-size: clamp(1.5rem, 3.5vw, 2.2rem);
-  letter-spacing: 0.07em;
+  font-size: clamp(1.4rem, 3.5vw, 2.2rem);
+  letter-spacing: .07em;
   color: var(--amarillo);
-  text-shadow: 0 0 20px rgba(255,215,0,0.4);
-  margin-bottom: 0.25rem;
+  text-shadow: 0 0 20px rgba(255,215,0,.4);
+  margin-bottom: .25rem;
 }
 
-.seccion-hint {
-  font-family: var(--font-sub);
-  font-size: 0.95rem;
-  color: #7a8ab0;
-}
+.seccion-hint { font-family: var(--font-sub); font-size: .9rem; color: #667090; }
 
-/* ── TARJETAS DE PERSONAJE ───────────────────────────────── */
 .personajes-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -293,536 +276,520 @@ header, section, nav, footer { position: relative; z-index: 1; }
   margin-bottom: 1.5rem;
 }
 
+/* Tarjeta: la <label> completa es clicable */
 .personaje-card {
   display: flex; flex-direction: column;
-  background: #0e1220;
+  background: #0b0e1c;
   border: 1px solid var(--borde);
-  border-radius: 16px;
+  border-radius: var(--radius);
   cursor: pointer;
   overflow: hidden;
-  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+  transition: transform .2s, box-shadow .2s, border-color .2s;
   position: relative;
   user-select: none;
 }
 
 .personaje-card:hover {
   transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 16px 40px rgba(0,0,0,0.7), 0 0 20px rgba(255,215,0,0.1);
+  box-shadow: 0 18px 45px rgba(0,0,0,.75);
 }
 
-/* Colores y brillo por elemento al seleccionar */
-.personaje-card.aire:has(input:checked)   {
+/* Brillo neón al estar seleccionada, color por elemento */
+.personaje-card.aire:has(input:checked) {
   border-color: var(--c-aire);
-  box-shadow: 0 0 0 2px var(--c-aire), 0 0 30px rgba(0,230,255,0.3);
+  box-shadow: 0 0 0 2px var(--c-aire), 0 0 28px rgba(0,230,255,.3);
 }
-.personaje-card.agua:has(input:checked)   {
+.personaje-card.agua:has(input:checked) {
   border-color: var(--c-agua);
-  box-shadow: 0 0 0 2px var(--c-agua), 0 0 30px rgba(0,190,255,0.3);
+  box-shadow: 0 0 0 2px var(--c-agua), 0 0 28px rgba(0,180,255,.3);
 }
-.personaje-card.fuego:has(input:checked)  {
+.personaje-card.fuego:has(input:checked) {
   border-color: var(--c-fuego);
-  box-shadow: 0 0 0 2px var(--c-fuego), 0 0 30px rgba(255,70,0,0.35);
+  box-shadow: 0 0 0 2px var(--c-fuego), 0 0 28px rgba(255,70,0,.35);
 }
 .personaje-card.tierra:has(input:checked) {
   border-color: var(--c-tierra);
-  box-shadow: 0 0 0 2px var(--c-tierra), 0 0 30px rgba(50,200,50,0.3);
+  box-shadow: 0 0 0 2px var(--c-tierra), 0 0 28px rgba(50,200,50,.3);
 }
 
+/* Radio button invisible */
 .personaje-card input[type="radio"] {
   position: absolute; opacity: 0; width: 0; height: 0;
 }
 
-/* Checkmark seleccionado */
+/* Checkmark verde neón al seleccionar */
 .personaje-card::after {
   content: '✓';
   position: absolute; top: 8px; right: 9px;
-  font-size: 1rem; font-weight: 900;
+  font-size: 1.1rem; font-weight: 900;
   color: var(--neon-green);
   text-shadow: 0 0 8px var(--neon-green);
-  opacity: 0; transition: opacity 0.2s;
-  z-index: 5;
+  opacity: 0; transition: opacity .2s; z-index: 5;
 }
 .personaje-card:has(input:checked)::after { opacity: 1; }
 
-/* Badge del elemento en la parte superior */
+/* Badge del elemento arriba de la tarjeta */
 .card-elemento-badge {
   font-family: var(--font-titulo);
-  font-size: 0.75rem;
-  letter-spacing: 0.1em;
-  padding: 0.3rem 0.6rem;
-  text-align: center;
-  border-bottom: 1px solid rgba(255,255,255,0.06);
+  font-size: .72rem; letter-spacing: .1em;
+  padding: .3rem .6rem; text-align: center;
+  border-bottom: 1px solid rgba(255,255,255,.06);
 }
+.aire-badge   { background: rgba(0,200,255,.18); color: var(--c-aire); }
+.agua-badge   { background: rgba(0,100,255,.18); color: var(--c-agua); }
+.fuego-badge  { background: rgba(255,80,0,.18);  color: #FF7755; }
+.tierra-badge { background: rgba(50,180,0,.18);  color: var(--c-tierra); }
 
-.aire-badge   { background: rgba(0,200,255,0.18); color: var(--c-aire); }
-.agua-badge   { background: rgba(0,100,255,0.18); color: var(--c-agua); }
-.fuego-badge  { background: rgba(255,80,0,0.18);  color: #FF7755; }
-.tierra-badge { background: rgba(50,180,0,0.18);  color: var(--c-tierra); }
-
-/* Contenedor del sprite del personaje */
-.card-sprite-wrap {
-  width: 100%;
-  height: 120px;
+/*
+  Contenedor de la imagen del personaje.
+  Fondo transparente para que se vean los colores reales del PNG.
+  SIN mix-blend-mode: la imagen se muestra con sus colores originales.
+*/
+.card-img-wrap {
+  width: 100%; height: 130px;
   overflow: hidden;
+  /* Fondo muy sutil que no tapa los colores del personaje */
+  background: rgba(8, 12, 28, 0.3);
+  display: flex; align-items: flex-end; justify-content: center;
+  padding-bottom: 4px;
   position: relative;
-  background: linear-gradient(180deg, #080c18 0%, #0d1525 100%);
 }
 
-/* Sprites: recortes de la imagen principal avatar_art.png */
-/* La imagen tiene aprox 5 personajes en la parte superior */
-.sprite {
-  width: 200%;          /* zoom en */
-  height: 200%;
-  background: url('avatar_art.png') no-repeat;
-  background-size: 500% auto;
-  position: absolute;
-  bottom: -10px;
-  transition: transform 0.3s;
+.card-img {
+  height: 125px;
+  width: auto;
+  object-fit: contain;
+  object-position: center bottom;
+  /* SIN mix-blend-mode → colores reales del PNG tal como fueron subidos */
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5));
+  transition: transform .3s, filter .3s;
+  display: block;
 }
 
-.personaje-card:hover .sprite { transform: scale(1.08) translateY(-4px); }
+.personaje-card:hover .card-img {
+  transform: scale(1.1) translateY(-5px);
+  filter: drop-shadow(0 6px 18px rgba(0,0,0,0.6)) brightness(1.08);
+}
 
-/* Posición de cada personaje en la imagen (ajustado por columnas) */
-/* La imagen tiene: Sokka, Katara, Aang, Zuko, Toph de izq a der */
-.aang-sprite   { background-position: 50% 12%; }  /* Aang en centro */
-.katara-sprite { background-position: 23% 12%; }  /* Katara 2da col */
-.zuko-sprite   { background-position: 72% 12%; }  /* Zuko 4ta col */
-.toph-sprite   { background-position: 92% 12%; }  /* Toph 5ta col */
-
-/* Degradado inferior en el sprite para fusionarlo */
-.card-sprite-wrap::after {
+/* Degradado inferior suave para fundir la imagen con la sección de info */
+.card-img-wrap::after {
   content: '';
-  position: absolute;
-  bottom: 0; left: 0; right: 0; height: 50%;
-  background: linear-gradient(transparent, #0e1220);
+  position: absolute; bottom: 0; left: 0; right: 0; height: 30%;
+  background: linear-gradient(transparent, rgba(11,14,28,0.85));
   pointer-events: none;
 }
 
-/* Info de la tarjeta */
-.card-info {
-  padding: 0.6rem 0.75rem 0.4rem;
-  flex: 1;
-}
+/* Info textual de la tarjeta */
+.card-info { padding: .6rem .75rem .3rem; flex: 1; }
 
 .personaje-nombre {
   font-family: var(--font-titulo);
-  font-size: 1.25rem;
-  letter-spacing: 0.08em;
+  font-size: 1.3rem; letter-spacing: .08em;
   color: var(--amarillo);
-  text-shadow: 0 0 12px rgba(255,215,0,0.4);
-  line-height: 1;
-  margin-bottom: 0.3rem;
+  text-shadow: 0 0 12px rgba(255,215,0,.4);
+  line-height: 1; margin-bottom: .25rem;
 }
 
-.personaje-desc {
-  font-size: 0.68rem;
-  color: #6a7a9a;
-  line-height: 1.4;
-}
+.personaje-desc { font-size: .67rem; color: #596880; line-height: 1.4; }
 
 /* Barra de poder */
 .card-poder-bar {
-  height: 4px;
-  background: rgba(255,255,255,0.07);
-  margin: 0.5rem 0.75rem 0.25rem;
-  border-radius: 4px;
-  overflow: hidden;
+  height: 4px; margin: .5rem .75rem .2rem;
+  background: rgba(255,255,255,.07);
+  border-radius: 4px; overflow: hidden;
 }
-
 .poder-fill {
-  height: 100%;
-  border-radius: 4px;
-  background: linear-gradient(90deg, var(--amarillo), var(--naranja));
-  box-shadow: 0 0 8px rgba(255,165,0,0.5);
+  height: 100%; border-radius: 4px;
+  background: linear-gradient(90deg, var(--amarillo), var(--dorado-osc));
+  box-shadow: 0 0 8px rgba(255,165,0,.5);
 }
 
-.card-footer-badge {
-  font-family: var(--font-sub);
-  font-size: 0.62rem;
-  color: #4a5a7a;
-  text-align: center;
-  padding: 0.3rem 0.5rem 0.5rem;
+.card-stats {
+  font-family: var(--font-sub); font-size: .6rem;
+  color: #3a4a62; text-align: center;
+  padding: .25rem .5rem .5rem;
 }
 
-/* ── BOTÓN COMBATE ───────────────────────────────────────── */
+/* ── BOTÓN COMBATE ────────────────────────────────────────── */
 .btn-combate {
-  display: flex; align-items: center; justify-content: center;
-  gap: 0.6rem;
+  display: flex; align-items: center; justify-content: center; gap: .6rem;
   background: linear-gradient(135deg, #FFD700, #FF8C00);
-  color: #0a0c14;
-  font-family: var(--font-titulo);
-  font-size: 1.3rem;
-  letter-spacing: 0.08em;
-  padding: 0.85rem 2.5rem;
-  border: 3px solid #000;
-  border-radius: 14px;
+  color: #080a12;
+  font-family: var(--font-titulo); font-size: 1.3rem; letter-spacing: .08em;
+  padding: .85rem 2.5rem;
+  border: 3px solid #000; border-radius: var(--radius);
   cursor: pointer;
-  box-shadow: var(--shadow-hard), 0 0 24px rgba(255,200,0,0.35);
+  box-shadow: var(--shadow), 0 0 24px rgba(255,200,0,.3);
   margin: 0 auto;
-  transition: transform 0.12s, box-shadow 0.12s;
+  transition: transform .12s, box-shadow .12s;
   user-select: none;
 }
 .btn-combate:hover {
   transform: translateY(-4px);
-  box-shadow: 6px 6px 0 #000, 0 0 35px rgba(255,200,0,0.55);
+  box-shadow: 6px 6px 0 #000, 0 0 35px rgba(255,200,0,.55);
 }
 .btn-combate:active { transform: translateY(1px); }
-.btn-icon { font-size: 1.5rem; }
+.btn-icon { font-size: 1.4rem; }
 
-/* ── HUD DE BATALLA ──────────────────────────────────────── */
+/* ── 6. HUD DE BATALLA ────────────────────────────────────── */
 .seccion-batalla {
-  background: linear-gradient(135deg, #0a0e1c, #0d1525);
-  border-color: rgba(0,200,255,0.25);
-  box-shadow: 0 0 40px rgba(0,150,255,0.1), 0 8px 40px rgba(0,0,0,0.8);
+  background: linear-gradient(135deg, #080c1c, #0c1225);
+  border-color: rgba(0,200,255,.22);
 }
 .seccion-batalla .seccion-titulo { color: var(--neon-cyan); }
-.seccion-batalla .seccion-hint   { color: #5a7090; }
+.seccion-batalla .seccion-hint   { color: #4a6080; }
 
 .hud-barra {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  display: grid; grid-template-columns: 1fr auto 1fr;
   gap: 1rem; align-items: center;
-  background: rgba(0,0,0,0.5);
-  border: 1px solid rgba(0,200,255,0.2);
-  border-radius: 16px;
-  padding: 1rem 1.25rem;
+  background: rgba(0,0,0,.55);
+  border: 1px solid rgba(0,200,255,.18);
+  border-radius: var(--radius); padding: 1rem 1.25rem;
   margin-bottom: 1.75rem;
-  box-shadow: inset 0 0 30px rgba(0,100,200,0.1);
+  box-shadow: inset 0 0 30px rgba(0,100,200,.08);
 }
 
 .hud-jugador, .hud-oponente {
-  display: flex; flex-direction: column; align-items: center; gap: 0.3rem;
+  display: flex; flex-direction: column; align-items: center; gap: .3rem;
 }
 
 .hud-nombre {
-  font-family: var(--font-titulo);
-  font-size: 0.95rem; letter-spacing: 0.2em;
-  color: var(--neon-cyan);
+  font-family: var(--font-titulo); font-size: .9rem;
+  letter-spacing: .2em; color: var(--neon-cyan);
   text-shadow: 0 0 10px var(--neon-cyan);
 }
 
-.hud-emoji { font-size: 2.8rem; filter: drop-shadow(0 0 10px rgba(255,200,0,0.5)); }
+/* Contenedor de imagen en el HUD */
+.hud-char-img {
+  width: 70px; height: 70px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2.5rem;
+}
+
+/* Imagen real del personaje en el HUD durante la batalla */
+/* SIN mix-blend-mode → colores reales, igual que en las tarjetas */
+.hud-char-real {
+  width: 70px; height: 70px;
+  object-fit: contain;
+  filter: drop-shadow(0 3px 10px rgba(0,0,0,0.6));
+  transition: transform .3s;
+}
+.hud-char-real:hover { transform: scale(1.1); }
 
 .hud-vida-wrap {
-  display: flex; align-items: center; gap: 0.4rem; width: 100%;
+  display: flex; align-items: center; gap: .4rem; width: 100%;
 }
-
 .hud-vida-label {
-  font-family: var(--font-titulo); font-size: 0.7rem;
-  color: #4a6080; letter-spacing: 0.1em;
+  font-family: var(--font-titulo); font-size: .65rem;
+  color: #3a5070; letter-spacing: .12em;
 }
-
 .hud-vida-barra {
   flex: 1; height: 8px;
-  background: rgba(255,255,255,0.08);
+  background: rgba(255,255,255,.07);
   border-radius: 6px; overflow: hidden;
-  border: 1px solid rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,.05);
 }
-
 .hud-vida-fill {
   height: 100%; border-radius: 6px;
-  transition: width 0.5s ease;
+  transition: width .5s ease;
 }
+
+/* Verde para el jugador, rojo para el oponente */
 .jugador-hp  { background: linear-gradient(90deg, #00e676, #00c853);
-               box-shadow: 0 0 8px rgba(0,230,118,0.5); }
+               box-shadow: 0 0 8px rgba(0,230,118,.5); }
 .oponente-hp { background: linear-gradient(90deg, #ff1744, #ff5722);
-               box-shadow: 0 0 8px rgba(255,23,68,0.5); }
+               box-shadow: 0 0 8px rgba(255,23,68,.5); }
+
+/* HP en rojo parpadeante cuando queda 1 vida */
+.hp-critico {
+  background: linear-gradient(90deg, #ff1744, #ff0000) !important;
+  animation: parpadeoCritico .7s ease-in-out infinite;
+}
 
 .hud-vida-num {
   font-family: var(--font-titulo); font-size: 1.2rem;
   color: var(--amarillo);
-  text-shadow: 0 0 8px rgba(255,215,0,0.5);
+  text-shadow: 0 0 8px rgba(255,215,0,.5);
   min-width: 1.4rem; text-align: center;
 }
-
-.hud-corazones { font-size: 0.9rem; }
+.hud-corazones { font-size: .85rem; }
 
 .hud-centro {
-  display: flex; flex-direction: column;
-  align-items: center; gap: 0.15rem;
+  display: flex; flex-direction: column; align-items: center; gap: .15rem;
 }
-
 .hud-vs {
   font-family: var(--font-titulo); font-size: 2.8rem;
   color: #fff;
   -webkit-text-stroke: 2px var(--neon-magenta);
-  text-shadow: 0 0 20px var(--neon-magenta), 0 0 40px rgba(255,0,200,0.4);
+  text-shadow: 0 0 20px var(--neon-magenta), 0 0 40px rgba(255,0,200,.4);
   animation: pulsoVS 1.6s ease-in-out infinite;
 }
-
-.hud-rayo { font-size: 1.3rem; animation: rebote 0.9s ease-in-out infinite; }
-
+.hud-rayo { font-size: 1.3rem; animation: rebote .9s ease-in-out infinite; }
 .hud-ronda {
-  font-family: var(--font-sub); font-size: 0.75rem;
-  color: #4a6080; letter-spacing: 0.12em;
+  font-family: var(--font-sub); font-size: .7rem;
+  color: #3a5070; letter-spacing: .12em;
 }
 
-/* ── ATAQUES GRID ────────────────────────────────────────── */
+/* ── 7. BOTONES DE ATAQUE ─────────────────────────────────── */
 .ataques-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 1rem;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem;
 }
 
 .btn { cursor: pointer; user-select: none; }
 
 .btn-ataque {
-  display: flex; flex-direction: column; align-items: center; gap: 0.4rem;
-  padding: 1.1rem 0.6rem;
-  border-radius: 16px;
-  border: 2px solid;
+  display: flex; flex-direction: column; align-items: center; gap: .4rem;
+  padding: 1.1rem .6rem; border-radius: var(--radius); border: 2px solid;
   font-family: var(--font-body);
-  transition: transform 0.12s, box-shadow 0.15s;
+  transition: transform .12s, box-shadow .15s;
   position: relative; overflow: hidden;
 }
-
-/* Brillo superior en los botones */
 .btn-ataque::before {
   content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0; height: 40%;
-  background: rgba(255,255,255,0.06);
+  position: absolute; top: 0; left: 0; right: 0; height: 40%;
+  background: rgba(255,255,255,.05);
   border-radius: 14px 14px 0 0;
+  pointer-events: none;
 }
-
 .btn-ataque:hover  { transform: translateY(-5px) scale(1.04); }
-.btn-ataque:active { transform: translateY(1px) scale(0.98); }
+.btn-ataque:active { transform: translateY(1px) scale(.98); }
 
-/* Icono de ataque circular con glow */
+/* Icono circular del ataque */
 .ataque-icono-wrap {
-  width: 54px; height: 54px;
-  border-radius: 50%;
+  width: 52px; height: 52px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  font-size: 1.7rem;
-  border: 2px solid;
-  transition: transform 0.3s;
+  font-size: 1.7rem; border: 2px solid;
+  transition: transform .3s;
 }
-.btn-ataque:hover .ataque-icono-wrap { transform: rotate(-10deg) scale(1.1); }
+.btn-ataque:hover .ataque-icono-wrap { transform: rotate(-10deg) scale(1.12); }
 
-.fuego-wrap  { background: rgba(255,70,0,0.2);  border-color: var(--c-fuego);
-               box-shadow: 0 0 15px rgba(255,70,0,0.4); }
-.agua-wrap   { background: rgba(0,180,255,0.2); border-color: var(--c-agua);
-               box-shadow: 0 0 15px rgba(0,180,255,0.4); }
-.tierra-wrap { background: rgba(50,200,0,0.2);  border-color: var(--c-tierra);
-               box-shadow: 0 0 15px rgba(50,200,0,0.4); }
-.aire-wrap   { background: rgba(0,220,255,0.2); border-color: var(--c-aire);
-               box-shadow: 0 0 15px rgba(0,220,255,0.4); }
+.fuego-wrap  { background: rgba(255,70,0,.2);  border-color: var(--c-fuego);
+               box-shadow: 0 0 14px rgba(255,70,0,.4); }
+.agua-wrap   { background: rgba(0,180,255,.2); border-color: var(--c-agua);
+               box-shadow: 0 0 14px rgba(0,180,255,.4); }
+.tierra-wrap { background: rgba(50,200,0,.2);  border-color: var(--c-tierra);
+               box-shadow: 0 0 14px rgba(50,200,0,.4); }
+.aire-wrap   { background: rgba(0,220,255,.2); border-color: var(--c-aire);
+               box-shadow: 0 0 14px rgba(0,220,255,.4); }
 
-.ataque-nombre {
-  font-family: var(--font-titulo); font-size: 1.1rem;
-  letter-spacing: 0.07em;
-}
+.ataque-nombre { font-family: var(--font-titulo); font-size: 1.1rem; letter-spacing: .07em; }
 
 /* Pipas de nivel de poder */
-.ataque-stats { display: flex; gap: 3px; }
-.stat-pip {
-  width: 8px; height: 8px; border-radius: 2px;
-  background: rgba(255,255,255,0.1);
-  border: 1px solid rgba(255,255,255,0.15);
-}
-.stat-pip.active { background: var(--amarillo);
-                   box-shadow: 0 0 4px rgba(255,215,0,0.6); }
+.ataque-pips { display: flex; gap: 3px; }
+.pip { width: 8px; height: 8px; border-radius: 2px;
+       background: rgba(255,255,255,.09); border: 1px solid rgba(255,255,255,.13); }
+.pip.on { background: var(--amarillo); box-shadow: 0 0 4px rgba(255,215,0,.6); }
 
-.ataque-poder { font-family: var(--font-sub); font-size: 0.72rem; opacity: 0.7; }
+.ataque-poder { font-family: var(--font-sub); font-size: .72rem; opacity: .7; }
 
-/* Colores por botón de ataque */
+/* Colores de los botones de ataque */
 .btn-fuego {
-  background: linear-gradient(160deg, #1a0800, #2d1000);
-  border-color: var(--c-fuego);
-  color: #ffaa88;
-  box-shadow: 0 4px 20px rgba(255,70,0,0.25);
+  background: linear-gradient(160deg, #1a0800, #2c1000);
+  border-color: var(--c-fuego); color: #ffaa88;
+  box-shadow: 0 4px 20px rgba(255,70,0,.22);
 }
-.btn-fuego:hover { box-shadow: 0 8px 30px rgba(255,70,0,0.5); }
+.btn-fuego:hover { box-shadow: 0 8px 30px rgba(255,70,0,.5); }
 
 .btn-agua {
   background: linear-gradient(160deg, #001428, #001e3c);
-  border-color: var(--c-agua);
-  color: #88ddff;
-  box-shadow: 0 4px 20px rgba(0,180,255,0.2);
+  border-color: var(--c-agua); color: #88ddff;
+  box-shadow: 0 4px 20px rgba(0,180,255,.2);
 }
-.btn-agua:hover { box-shadow: 0 8px 30px rgba(0,180,255,0.45); }
+.btn-agua:hover { box-shadow: 0 8px 30px rgba(0,180,255,.45); }
 
 .btn-tierra {
   background: linear-gradient(160deg, #001400, #002800);
-  border-color: var(--c-tierra);
-  color: #88ee88;
-  box-shadow: 0 4px 20px rgba(50,200,0,0.2);
+  border-color: var(--c-tierra); color: #88ee88;
+  box-shadow: 0 4px 20px rgba(50,200,0,.2);
 }
-.btn-tierra:hover { box-shadow: 0 8px 30px rgba(50,200,0,0.45); }
+.btn-tierra:hover { box-shadow: 0 8px 30px rgba(50,200,0,.45); }
 
 .btn-aire {
   background: linear-gradient(160deg, #001a1e, #00282e);
-  border-color: var(--c-aire);
-  color: #88f8ff;
-  box-shadow: 0 4px 20px rgba(0,220,255,0.2);
+  border-color: var(--c-aire); color: #88f8ff;
+  box-shadow: 0 4px 20px rgba(0,220,255,.2);
 }
-.btn-aire:hover { box-shadow: 0 8px 30px rgba(0,220,255,0.45); }
+.btn-aire:hover { box-shadow: 0 8px 30px rgba(0,220,255,.45); }
 
-/* ── MENSAJES ─────────────────────────────────────────────── */
+/* ── 8. MENSAJES CON EXPRESIONES ─────────────────────────── */
 .seccion-mensajes {
-  background: #070b14;
-  border-color: rgba(255,215,0,0.2);
+  background: #060a12;
+  border-color: rgba(255,215,0,.18);
 }
 
 .mensaje-header {
-  font-family: var(--font-titulo);
-  font-size: 0.8rem; letter-spacing: 0.2em;
-  color: #4a6080;
-  margin-bottom: 0.75rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid rgba(255,255,255,0.05);
+  font-family: var(--font-titulo); font-size: .75rem;
+  letter-spacing: .22em; color: #3a5070;
+  margin-bottom: .7rem; padding-bottom: .5rem;
+  border-bottom: 1px solid rgba(255,255,255,.04);
 }
 
 .mensaje-burbuja {
-  background: rgba(255,215,0,0.06);
-  border: 1px solid rgba(255,215,0,0.2);
-  border-radius: 14px;
-  padding: 1.1rem 1.25rem;
-  font-family: var(--font-sub);
-  font-size: 1rem;
-  color: #c8d8f0;
-  text-align: center;
-  box-shadow: inset 0 0 20px rgba(255,215,0,0.04);
+  background: rgba(255,215,0,.05);
+  border: 1px solid rgba(255,215,0,.18);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  font-family: var(--font-sub); font-size: 1rem;
+  color: #c0d0e8; text-align: center;
   min-height: 56px;
   display: flex; align-items: center; justify-content: center;
+  line-height: 1.55;
 }
 
-/* ── RESULTADO FINAL ──────────────────────────────────────── */
+/* Colores de los textos de expresión según resultado */
+.msg-victoria {
+  color: #aaff88;
+  text-shadow: 0 0 10px rgba(100,255,50,.4);
+  font-family: var(--font-titulo); font-size: 1.05rem; letter-spacing: .04em;
+}
+.msg-derrota {
+  color: #ff8888;
+  text-shadow: 0 0 10px rgba(255,50,50,.4);
+  font-family: var(--font-titulo); font-size: 1.05rem; letter-spacing: .04em;
+}
+.msg-empate {
+  color: var(--amarillo);
+  text-shadow: 0 0 10px rgba(255,215,0,.4);
+  font-family: var(--font-titulo); font-size: 1.05rem; letter-spacing: .04em;
+}
+
+/* ── 9. RESULTADO FINAL ───────────────────────────────────── */
 .seccion-resultado {
   background: radial-gradient(ellipse at center, #0a0520 0%, #040210 100%);
-  border: 2px solid rgba(255,215,0,0.3);
-  box-shadow: 0 0 60px rgba(255,215,0,0.12);
+  border: 2px solid rgba(255,215,0,.28);
+  box-shadow: 0 0 60px rgba(255,215,0,.1);
   text-align: center;
 }
 
+/* Expresión del personaje (la frase como "¡Mi fuego es imparable!") */
+.resultado-expresion {
+  font-family: var(--font-sub);
+  font-size: clamp(1rem, 2.5vw, 1.3rem);
+  color: #b0c8e8;
+  margin-bottom: .75rem;
+  padding: .6rem 1rem;
+  background: rgba(255,255,255,.04);
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,.06);
+}
+
+/* Texto grande del resultado: GANÓ / DERROTA / EMPATE */
 .resultado-grande {
   font-family: var(--font-titulo);
   font-size: clamp(2.8rem, 9vw, 5rem);
-  background: linear-gradient(180deg, #fff5a0, var(--amarillo), var(--naranja));
-  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-  background-clip: text;
-  filter: drop-shadow(0 0 20px rgba(255,200,0,0.5));
-  letter-spacing: 0.05em;
-  animation: zoomIn 0.5s cubic-bezier(.36,1.5,.6,1) both;
+  background: linear-gradient(180deg, #fff8a0, var(--amarillo), var(--dorado-osc));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent; background-clip: text;
+  filter: drop-shadow(0 0 20px rgba(255,200,0,.5));
+  letter-spacing: .05em;
+  animation: zoomIn .5s cubic-bezier(.36,1.5,.6,1) both;
 }
 
 .resultado-detalle {
-  font-family: var(--font-sub); font-size: 1rem;
-  margin-top: 0.6rem; color: #6a8ab0;
+  font-family: var(--font-sub); font-size: .95rem;
+  margin-top: .6rem; color: #5a7898;
 }
 
-/* ── REINICIAR ────────────────────────────────────────────── */
+/* ── 10. REINICIAR ────────────────────────────────────────── */
 .seccion-reiniciar {
-  background: #070b14;
-  border-color: rgba(255,215,0,0.2);
+  background: #060a12;
+  border-color: rgba(255,215,0,.2);
   padding: 1.5rem; text-align: center;
 }
 
 .btn-reiniciar {
   background: linear-gradient(135deg, #FFD700, #FF8C00);
-  color: #0a0c14;
+  color: #080a12;
   font-family: var(--font-titulo); font-size: 1.3rem;
-  letter-spacing: 0.08em;
-  padding: 0.85rem 2.5rem;
-  border: 3px solid #000; border-radius: 14px;
-  box-shadow: var(--shadow-hard), 0 0 24px rgba(255,200,0,0.3);
-  transition: transform 0.12s, box-shadow 0.12s;
+  letter-spacing: .08em; padding: .85rem 2.5rem;
+  border: 3px solid #000; border-radius: var(--radius);
+  cursor: pointer;
+  box-shadow: var(--shadow), 0 0 24px rgba(255,200,0,.28);
+  transition: transform .12s, box-shadow .12s;
+  user-select: none;
 }
 .btn-reiniciar:hover {
   transform: translateY(-4px);
-  box-shadow: 6px 6px 0 #000, 0 0 35px rgba(255,200,0,0.5);
+  box-shadow: 6px 6px 0 #000, 0 0 35px rgba(255,200,0,.5);
 }
 
-/* ── NAV INFERIOR ────────────────────────────────────────── */
+/* ── NAV INFERIOR ─────────────────────────────────────────── */
 .nav-bottom {
-  display: flex; justify-content: center; gap: 0;
+  display: flex; justify-content: center;
   max-width: 920px; margin: 0 auto 1.75rem;
-  background: #0a0d18;
+  background: #080a16;
   border: 1px solid var(--borde);
-  border-radius: 50px;
-  overflow: hidden;
+  border-radius: 50px; overflow: hidden;
   position: relative; z-index: 1;
 }
-
 .nav-item {
   flex: 1; display: flex; flex-direction: column;
-  align-items: center; gap: 0.2rem;
-  padding: 0.7rem 0.5rem;
-  font-family: var(--font-titulo); font-size: 0.72rem;
-  letter-spacing: 0.12em;
-  color: #3a4a6a;
-  cursor: pointer;
-  transition: color 0.2s, background 0.2s;
+  align-items: center; gap: .2rem; padding: .7rem .5rem;
+  font-family: var(--font-titulo); font-size: .7rem; letter-spacing: .12em;
+  color: #2a3a5a; cursor: pointer; transition: color .2s, background .2s;
 }
-.nav-item span { font-size: 0.65rem; }
-.nav-item:hover { color: #8899cc; background: rgba(255,255,255,0.03); }
-.nav-active { color: var(--amarillo) !important;
-              text-shadow: 0 0 10px rgba(255,215,0,0.4); }
+.nav-item span { font-size: .6rem; }
+.nav-item:hover { color: #7080aa; background: rgba(255,255,255,.03); }
+.nav-active { color: var(--amarillo) !important; text-shadow: 0 0 10px rgba(255,215,0,.4); }
 
 /* ── FOOTER ───────────────────────────────────────────────── */
 .footer {
-  display: flex; align-items: center; justify-content: center; gap: 0.75rem;
-  padding: 1.25rem;
-  background: #040608;
-  color: #2a3a5a;
-  font-family: var(--font-sub); font-size: 0.82rem;
-  letter-spacing: 0.04em;
-  border-top: 1px solid rgba(255,255,255,0.04);
+  display: flex; align-items: center; justify-content: center; gap: .75rem;
+  padding: 1.2rem;
+  background: #030507;
+  color: #222840;
+  font-family: var(--font-sub); font-size: .8rem; letter-spacing: .04em;
+  border-top: 1px solid rgba(255,255,255,.04);
   position: relative; z-index: 1;
 }
+.footer-logo { width: 28px; height: 28px; object-fit: contain; opacity: .35; }
 
-.footer-logo {
-  width: 30px; height: 30px;
-  object-fit: contain;
-  opacity: 0.4;
-  filter: grayscale(1);
-}
-
-/* ── ANIMACIONES ──────────────────────────────────────────── */
+/* ── 11. ANIMACIONES ──────────────────────────────────────── */
 @keyframes tituloEntrada {
-  from { opacity: 0; transform: scale(0.7) translateY(-20px); }
+  from { opacity: 0; transform: scale(.7) translateY(-20px); }
   to   { opacity: 1; transform: scale(1) translateY(0); }
 }
-
 @keyframes rebote {
   0%,100% { transform: translateY(0); }
   50%      { transform: translateY(-8px); }
 }
-
 @keyframes pulsoVS {
   0%,100% { transform: scale(1); }
-  50%      { transform: scale(1.12);
-             text-shadow: 0 0 30px var(--neon-magenta), 0 0 60px rgba(255,0,200,0.4); }
+  50% { transform: scale(1.12);
+        text-shadow: 0 0 30px var(--neon-magenta), 0 0 60px rgba(255,0,200,.4); }
 }
-
 @keyframes zoomIn {
-  from { opacity: 0; transform: scale(0.5) rotate(-6deg); }
+  from { opacity: 0; transform: scale(.5) rotate(-6deg); }
   to   { opacity: 1; transform: scale(1) rotate(0); }
 }
-
 @keyframes sacudir {
   0%,100% { transform: translateX(0); }
-  20%      { transform: translateX(-10px); }
-  40%      { transform: translateX(10px); }
-  60%      { transform: translateX(-6px); }
-  80%      { transform: translateX(6px); }
+  20% { transform: translateX(-10px); }
+  40% { transform: translateX(10px); }
+  60% { transform: translateX(-6px); }
+  80% { transform: translateX(6px); }
+}
+/* Parpadeo de barra HP crítico */
+@keyframes parpadeoCritico {
+  0%,100% { opacity: 1; }
+  50%      { opacity: .4; }
 }
 
-.sacudir { animation: sacudir 0.45s ease; }
+.sacudir { animation: sacudir .45s ease; }
 
-/* ── RESPONSIVE ───────────────────────────────────────────── */
+/* ── 12. RESPONSIVE ───────────────────────────────────────── */
 @media (max-width: 700px) {
   .personajes-grid { grid-template-columns: 1fr 1fr; }
   .ataques-grid    { grid-template-columns: 1fr 1fr; }
   .hud-barra       { grid-template-columns: 1fr; }
-  .hud-centro      { flex-direction: row; gap: 0.5rem; padding: 0.5rem 0; }
-  .hero-art-img    { max-height: 180px; }
-  .titulo-elementales { font-size: 3.5rem; }
+  .hud-centro      { flex-direction: row; gap: .5rem; padding: .5rem 0; }
+  .hero-art-img    { max-height: 200px; }
+  .titulo-elementales { font-size: 3.2rem; }
   .nav-bottom      { border-radius: 16px; }
 }
-
 @media (max-width: 420px) {
   .seccion { padding: 1.1rem; }
-  .titulo-elementales { font-size: 2.8rem; }
-  .card-sprite-wrap { height: 90px; }
+  .titulo-elementales { font-size: 2.6rem; }
+  .card-img-wrap { height: 100px; }
+  .card-img { height: 95px; }
 }

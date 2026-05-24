@@ -1,111 +1,124 @@
-# 🔥💧🌱🌪️ Avatar — 
+# ⚔️ LOS ELEMENTOS — La Leyenda de Aang
 
-**Escuadrón Lobo · Algoritmos & JavaScript**
+**Escuadrón Lobo · JavaScript + HTML + CSS**
 
 ---
 
-## ¿De qué trata el juego?
+## Descripción del juego
 
-Es un juego de batalla por turnos basado en **La Leyenda de Aang: El Avatar**.
+**LOS ELEMENTOS** es un juego de batalla por turnos basado en *La Leyenda de Aang*.
+El jugador elige a uno de los cuatro guerreros elementales y se enfrenta a un oponente
+controlado por la CPU. Cada turno se elige un ataque; el de mayor poder gana el turno
+y el rival pierde una vida. Gana quien deje al otro sin vidas.
 
-El jugador elige un personaje (Zuko, Katara, Aang o Toph) y se enfrenta a un oponente elegido automáticamente por la CPU. En cada turno se elige un ataque; el que tenga mayor poder gana el turno y el rival pierde una vida. Gana quien deje al otro sin vidas.
+---
+
+## Personajes jugables
+
+| Personaje | Elemento | Poder | Velocidad | Imagen |
+|-----------|----------|-------|-----------|--------|
+| **Aang**  | 🌪️ Aire  | 3 | 5 | `AANG.png` |
+| **Katara**| 💧 Agua  | 3 | 4 | `KATARA.png` |
+| **Zuko**  | 🔥 Fuego | 4 | 3 | `ZUKO.png` |
+| **Toph**  | 🌱 Tierra| 2 | 5 | `TOPH.png` |
+
+Cada personaje tiene **3 expresiones** únicas que aparecen en el bocadillo según el resultado del turno:
+- `gana` → cuando el jugador vence el turno
+- `pierde` → cuando el jugador pierde el turno
+- `empata` → cuando hay empate de poder
 
 ---
 
 ## Estructura del proyecto
 
 ```
-AvatarJuego/
-├── index.html       → Estructura HTML completa del juego
-├── styles.css       → Estilos visuales (tema /cómic)
-├── logo_lobo.png    → Logo del Escuadrón Lobo
-└── js/
-    └── avatar.js    → Lógica del juego en JavaScript
+LosElementos/
+├── index.html            → Estructura HTML completa (5 secciones)
+├── styles.css            → Estilos: tema videojuego anime oscuro + VR
+├── js/
+│   └── avatar.js         → Lógica del juego en JavaScript
+├── AANG.png              → Imagen individual de Aang
+├── KATARA.png            → Imagen individual de Katara
+├── ZUKO.png              → Imagen individual de Zuko
+├── TOPH.png              → Imagen individual de Toph
+├── Logo_del_AVATAR.png   → Arte del grupo (banner y fondo)
+└── logo_lobo.png         → Logo del Escuadrón Lobo
 ```
 
 ---
 
 ## Cómo ejecutar
 
-1. Descomprimir el archivo `AvatarJuego.zip`
-2. Abrir la carpeta `AvatarJuego/`
-3. Hacer doble clic en `index.html`
-4. Se abre directamente en el navegador (Chrome, Firefox, Edge)
-
-> No requiere instalación ni servidor.
+1. Descomprimir `LosElementos.zip`
+2. Abrir la carpeta `LosElementos/`
+3. Doble clic en `index.html`
+4. Se abre en el navegador — no requiere instalación
 
 ---
 
 ## Flujo del juego
 
 ```
-Inicio
+Inicio → Elegir personaje (radio buttons)
   ↓
-Seleccionar personaje (radio buttons)
+Pulsar "¡ENTRAR AL COMBATE!"
   ↓
-Pulsar "Seleccionar"
-  ↓
-La CPU elige oponente al azar
+CPU elige oponente al azar
   ↓
 Elegir ataque (Fuego / Agua / Tierra / Aire)
   ↓
-Se comparan poderes → se actualiza vidas
+Comparar poderes → descontar vida al perdedor
   ↓
-¿Alguno llegó a 0 vidas?
-  ├─ No → volver a elegir ataque
-  └─ Sí → mostrar resultado + botón Reiniciar
+Mostrar expresión del personaje en el bocadillo
+  ↓
+¿Alguien llegó a 0 vidas?
+  ├─ No → siguiente turno (ronda++)
+  └─ Sí → mostrar resultado final + botón Reiniciar
 ```
 
 ---
 
-## Descripción de archivos
+## Ataques y poderes
 
-### `index.html`
-- `<section id="seleccionar-personaje">` — tarjetas con radio buttons
-- `<section id="seleccionar-ataque">` — barra de vidas + botones de ataque
-- `<section id="mensajes">` — párrafo dinámico modificado por JS
-- `<section id="resultado-final">` — resultado final (oculto al inicio)
-- `<section id="reiniciar">` — botón de reinicio (oculto al inicio)
+| Ataque | Emoji | Poder |
+|--------|-------|-------|
+| Fuego  | 🔥    | 4     |
+| Agua   | 💧    | 3     |
+| Aire   | 🌪️   | 3     |
+| Tierra | 🌱    | 2     |
 
-### `styles.css`
-- Variables CSS (colores, fuentes, sombras de cómic)
-- Diseño tipo cómic con fuente **Bangers** + **Nunito**
-- Animaciones CSS: entrada del título, rebote, sacudida
-- Responsive para móviles (grid de 2 columnas en pantallas pequeñas)
+La CPU elige su ataque con `Math.random()` cada turno.
+Si los poderes son iguales → empate (nadie pierde vida).
 
-### `js/avatar.js`
-| Función | Qué hace |
-|---|---|
-| `seleccionarPersonajeJugador()` | Lee el radio checked y guarda el personaje en el estado |
-| `seleccionarOponenteAleatorio(excluir)` | Elige un personaje distinto al del jugador usando `Math.random()` |
-| `ejecutarAtaque(idAtaque)` | Compara poderes y actualiza vidas y mensajes |
-| `ataqueOponenteAleatorio()` | La CPU elige ataque al azar |
-| `actualizarVidasDOM()` | Sincroniza los `<span>` de vidas con el estado |
-| `generarCorazones(actuales, max)` | Genera el string de ❤️/💔 para las vidas |
-| `sacudirElemento(el)` | Aplica animación CSS de sacudida |
-| `verificarFinJuego()` | Detecta si alguien llegó a 0 vidas |
-| `reiniciarJuego()` | Resetea estado y DOM sin recargar la página |
+---
+
+## Diseño Visual
+
+- **Fondo**: grilla de videojuego + imagen del grupo difuminada como fondo ambiental
+- **Tarjetas de personaje**: imágenes PNG reales con `mix-blend-mode: multiply` para eliminar el fondo blanco
+- **HUD de batalla**: barras de vida (verde/rojo), nombres, imágenes reales de los personajes
+- **Bocadillo de mensajes**: texto dinámico con expresiones únicas por personaje y resultado
+- **Efectos VR**: scanlines, marco neón, brillo por elemento, animaciones CSS
 
 ---
 
 ## Conceptos JavaScript utilizados
 
-| Concepto | Dónde se usa |
+| Concepto | Uso |
 |---|---|
-| `document.getElementById()` | Obtener referencias a elementos del DOM |
-| `querySelectorAll()` | Obtener todos los radio buttons |
-| `addEventListener('click', fn)` | Escuchar clics en botones |
-| `Math.random()` + `Math.floor()` | Selección aleatoria de personaje/ataque |
-| `Object.keys()` + `.filter()` | Filtrar personajes disponibles |
-| `Array.find()` | Buscar un ataque por su id |
-| `classList.add/remove()` | Mostrar y ocultar secciones |
-| `innerHTML` | Escribir HTML dinámico en mensajes |
-| `forEach()` | Registrar eventos en múltiples botones |
-| Objetos y arrays | Almacenar datos de personajes y ataques |
+| Objetos con propiedades anidadas | `PERSONAJES` con `expresiones: { gana, pierde, empata }` |
+| Array con `find()` | Buscar ataque por id |
+| `querySelectorAll` + `forEach` | Leer radio buttons |
+| `Math.random()` + `Math.floor()` | Oponente y ataque aleatorios |
+| `classList.add/remove` | Mostrar/ocultar secciones |
+| `innerHTML` | Mensajes dinámicos con HTML |
+| `style.width` | Actualizar barras de HP |
+| `addEventListener` | Eventos de clic en botones |
+| Estado global (`estado`) | Centralizar variables del juego |
 
 ---
 
 ## Requisitos
 
-- Navegador moderno con JavaScript habilitado
-- Sin dependencias ni librerías externas
+- Navegador moderno (Chrome 80+, Firefox 75+, Edge 80+)
+- JavaScript habilitado — sin dependencias externas
