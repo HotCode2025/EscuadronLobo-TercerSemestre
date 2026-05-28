@@ -36,7 +36,7 @@ const PERSONAJES = {
     nombre:   "Aang",
     elemento: "Aire",
     emoji:    "🌪️",
-    imagen:   "AANG.png",
+    imagen:   "./assets/AANG.png",
     expresiones: {
       gana:   "¡YAAAH! ¡El viento nunca miente! 🌪️✨",
       pierde: "¡Auch! Eso dolió... ¡pero no me rindo! 😤",
@@ -47,7 +47,7 @@ const PERSONAJES = {
     nombre:   "Katara",
     elemento: "Agua",
     emoji:    "💧",
-    imagen:   "KATARA.png",
+    imagen:   "./assets/KATARA.png",
     expresiones: {
       gana:   "¡El agua siempre encuentra su camino! 💧🏆",
       pierde: "¡Grrr! ¡El agua no se rinde, vuelvo más fuerte! 😠",
@@ -58,7 +58,7 @@ const PERSONAJES = {
     nombre:   "Zuko",
     elemento: "Fuego",
     emoji:    "🔥",
-    imagen:   "ZUKO.png",
+    imagen:   "./assets/ZUKO.png",
     expresiones: {
       gana:   "¡MI FUEGO ES IMPARABLE! 🔥👊 ¡HONOR!",
       pierde: "¡IMPOSIBLE! ¡Esto no ha terminado! 😡🔥",
@@ -69,7 +69,7 @@ const PERSONAJES = {
     nombre:   "Toph",
     elemento: "Tierra",
     emoji:    "🌱",
-    imagen:   "TOPH.png",
+    imagen:   "./assets/TOPH.png",
     expresiones: {
       gana:   "¡JA! ¿Eso fue todo? ¡Soy la mejor del mundo! 🌱💪",
       pierde: "¡Bien jugado! Pero la próxima te aplasto 😤🪨",

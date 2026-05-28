@@ -70,7 +70,7 @@ body {
   min-height: 100vh;
   overflow-x: hidden;
   background-color: #080a12;
-  background-image: url('los_elementos.png');
+  background-image: url('../assets/los_elementos.png');
   background-size: cover;
   background-position: center center;
   background-attachment: fixed;
