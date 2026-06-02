@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Salto del Caballo</title>
+        <!-- CSS -->
+        <link rel="stylesheet" href="./css/style.css" />
+    
+    </head>
+
+    <body>        
+        <div class="container">
+            <!-- Badge Escuadrón Lobo -->
+            <div class="equipo-badge">
+                <img src="./assets/logo_lobo.png" alt="Escuadrón Lobo" class="equipo-logo" />
+                <div class="equipo-texto">
+                    <span class="equipo-nombre">ESCUADRÓN</span>
+                    <span class="equipo-lobo">LOBO</span>
+                </div>
+            </div>            
+            <h1>🐴 El salto del Caballo</h1>
+            <p>El Caballo debe recorrer las 64 casillas una sola vez.</p>
+            <!-- Botones -->
+            <div class="botones">
+                <button onclick="iniciar()">Resolver</button>
+                <button onclick="reiniciar()">Reiniciar</button>
+            </div>
+            <div class="juego">
+                <!-- Tablero -->
+                <div id="tablero"></div>
+        
+                <!-- Movimientos -->
+                <div id="movimientos-container">
+                    <h2>Movimientos</h2>
+                    <div id="movimientos"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- JS -->
+        <script src="./js/JS.js"></script>
+    </body>
+</html>
