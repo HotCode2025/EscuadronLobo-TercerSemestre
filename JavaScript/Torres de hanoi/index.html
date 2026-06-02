@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Torres de Hanoi</title>
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+    <div class="equipo-badge">
+        <img src="./assets/logo_lobo.png" alt="Escuadrón Lobo" class="equipo-logo">
+        <div class="equipo-texto">
+            <span class="equipo-nombre">ESCUADRÓN</span>
+            <span class="equipo-lobo">LOBO</span>
+        </div>
+    </div>
+
+    <h1>🗼 Torres de Hanoi</h1>
+
+    <div id="controles">
+        <label>Discos:</label>
+        <input type="number" id="numDiscos" value="3" min="1" max="8">
+        <button onclick="iniciar()">Iniciar</button>
+        <button onclick="reiniciar()">Reiniciar</button>
+    </div>
+
+    <div id="escenario">
+        <div id="torres">
+            <div class="torre-col">
+                <div class="torre-label">A</div>
+                <div class="torre">
+                    <div class="varilla"></div>
+                    <div class="discos" id="discosA"></div>
+                </div>
+            </div>
+            <div class="torre-col">
+                <div class="torre-label">B</div>
+                <div class="torre">
+                    <div class="varilla"></div>
+                    <div class="discos" id="discosB"></div>
+                </div>
+            </div>
+            <div class="torre-col">
+                <div class="torre-label">C</div>
+                <div class="torre">
+                    <div class="varilla"></div>
+                    <div class="discos" id="discosC"></div>
+                </div>
+            </div>
+        </div>
+        <div id="base"></div>
+    </div>
+
+    <div id="info">Movimiento: <span id="movActual">0</span> / <span id="movTotal">0</span></div>
+
+    <script src="js/hanoi.js"></script>
+
+</body>
+</html>
