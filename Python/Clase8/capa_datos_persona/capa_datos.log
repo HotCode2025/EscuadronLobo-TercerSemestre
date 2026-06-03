@@ -1,0 +1,31 @@
+02:53:07 PM:ERROR [conexion.py:26] Ocurrió un error: 'utf-8' codec can't decode byte 0xab in position 90: invalid start byte
+02:54:41 PM:ERROR [conexion.py:26] Ocurrió un error: 'utf-8' codec can't decode byte 0xab in position 90: invalid start byte
+02:55:36 PM:ERROR [conexion.py:27] Ocurrió un error: 'utf-8' codec can't decode byte 0xab in position 90: invalid start byte
+02:57:25 PM:ERROR [conexion.py:27] Ocurrió un error: 'utf-8' codec can't decode byte 0xab in position 90: invalid start byte
+02:59:01 PM:ERROR [conexion.py:27] Ocurrió un error: 'utf-8' codec can't decode byte 0xab in position 90: invalid start byte
+09:56:59 AM:ERROR [conexion.py:27] Ocurrió un error: invalid connection option "database"
+
+09:57:23 AM:DEBUG [conexion.py:24] Conexión Exitosa: <psycopg.Connection [IDLE] (host=127.0.0.1 user=postgres database=test_bd) at 0x1bd0be45010>
+09:57:37 AM:DEBUG [persona.py:53] 
+            Id Pesona: 1,
+            Nombre: Juan,
+            Apellido: Perez,
+            Email: jperez@mail.com
+        
+09:57:37 AM:DEBUG [persona.py:55] 
+            Id Pesona: None,
+            Nombre: Jose,
+            Apellido: Lepez,
+            Email: jlepez@mail.com
+        
+09:57:37 AM:DEBUG [persona.py:58] 
+            Id Pesona: 1,
+            Nombre: None,
+            Apellido: None,
+            Email: None
+        
+10:05:13 AM:DEBUG [conexion.py:24] Conexión Exitosa: <psycopg.Connection [IDLE] (host=127.0.0.1 user=postgres database=test_bd) at 0x1eb1fea5010>
+10:06:15 AM:DEBUG [conexion.py:24] Conexión Exitosa: <psycopg.Connection [IDLE] (host=127.0.0.1 user=postgres database=test_bd) at 0x2d964dd5010>
+10:06:15 AM:ERROR [conexion.py:40] Ocurrió un error: 'NoneType' object has no attribute 'cursor'
+10:08:11 AM:DEBUG [conexion.py:24] Conexión Exitosa: <psycopg.Connection [IDLE] (host=127.0.0.1 user=postgres database=test_bd) at 0x1dd5de05010>
+10:08:11 AM:DEBUG [conexion.py:37] Se abrió correctamente el cursor: <psycopg.Cursor [no result] [IDLE] (host=127.0.0.1 user=postgres database=test_bd) at 0x1dd5d5450d0>
