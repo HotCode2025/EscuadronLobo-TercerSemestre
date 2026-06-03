@@ -11,7 +11,6 @@ def get_productos_por_categoria(categoria):
     conn.close()
     return [dict(r) for r in rows]
 
-
 def crear_orden(mesa, items, mozo_id=None, cliente_id=None):
     """
     items: lista de {"producto_id": int, "cantidad": int, "subtotal": float}
