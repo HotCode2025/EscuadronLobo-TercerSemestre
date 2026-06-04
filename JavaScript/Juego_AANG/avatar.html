@@ -3,7 +3,8 @@
     
 <head>
     <meta charset="UTF-8">
-    <title>LA LEYENDA DE AANG: AVATAR</title>    
+    <title>LA LEYENDA DE AANG: AVATAR</title>
+    <link rel="stylesheet" href="./css/styles.css" />
 </head>
 
 <body>
@@ -31,21 +32,34 @@
         <p>Tu personaje <span id="personaje-jugador"></span> tiene <span>3</span> vidas</p> <!--Pero esto debe ser dinámico, necesitamos que cambie-->
         <p>El personaje <span id="personaje-enemigo"></span> del enemigo tiene <span>3</span> vidas</p> <!--Con la etiqueta spam vamos a modificar el 3 con JS-->
         <p>
-            <button id="boton-fuego">Fuego 🔥</button>
-            <button id="boton-agua">Agua 💧</button>
-            <button id="boton-tierra">Tierra 🌱</button>
-            <button id="boton-aire">Aire 🌪️</button>
+            <button id="boton-punio">Punio 👊</button>
+            <button id="boton-patada">Patada 🦵</button>
+            <button id="boton-barrida">Barrida 🧹</button>
         </p>
     </section>
 
     <section id="mensajes"> <!--Será un párrafo dinámico-->
-        <p>Tu personaje atacó con todo el poder del FUEGO, el personaje del enemigo atacó con el medio poder de la TIERRA- GANASTE 🎆</p>
+    
     </section>
 
     <section id="reiniciar">
         <button id="boton-reiniciar">Reiniciar</button>
     </section>
     
+    <section id="reglas">
+        <h3>Ayuda del juego</h3>
+        <details>
+            <summary>📜 Reglas del juego</summary>
+                <p>1️⃣ Primero debes seleccionar un personaje.</p>
+                <p>2️⃣ Tú y el enemigo comienzan con 3 vidas.</p>
+                <p>3️⃣ En cada ronda ambos atacan.</p>
+                <p>👊 Puño vence a 🧹 Barrida.</p>
+                <p>🦵 Patada vence a 👊 Puño.</p>
+                <p>🧹 Barrida vence a 🦵 Patada.</p>
+                <p>Si ambos usan el mismo ataque, la ronda termina en empate.</p>
+        </details>
+    </section>
+
     <script src="./js/avatar.js"></script>
 </body>
 </html>         
