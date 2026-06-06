@@ -1,5 +1,5 @@
-import os
-from gestion.gestion_usuarios import get_todos, crear_usuario, eliminar_usuario, cambiar_contrasena, ROLES
+import re
+from gestion.gestion_usuarios import get_todos, crear_usuario, eliminar_usuario, ROLES
 from gestion.gestion_stock import (
     get_todos as get_ingredientes,
     get_alertas,
@@ -7,8 +7,8 @@ from gestion.gestion_stock import (
     get_todos_productos,
     toggle_disponible,
 )
-import re
 from gestion.gestion_ventas import get_ventas_hoy, get_ventas_por_fecha, get_resumen_ventas, get_items_venta
+from menus.utils import limpiar, separador, icono_stock, cambiar_contrasena_ui
 
 CATEGORIAS_LABEL = {
     "hamburguesa":    "Hamburguesa",
@@ -16,22 +16,6 @@ CATEGORIAS_LABEL = {
     "acompanamiento": "Acompañamiento",
     "bebida":         "Bebida",
 }
-
-
-def limpiar():
-    os.system("cls" if os.name == "nt" else "clear")
-
-
-def separador(ancho=48):
-    print("─" * ancho)
-
-
-def _icono_stock(cantidad, minimo):
-    if cantidad <= minimo:
-        return "BAJO"
-    if cantidad <= minimo * 2:
-        return "MEDIO"
-    return "ALTO"
 
 
 class MenuAdmin:
@@ -99,12 +83,12 @@ class MenuAdmin:
         usuarios = get_todos()
         print("=" * 48)
         print("  USUARIOS")
-        separador()
+        separador(48)
         print(f"  {'ID':<4} {'Nombre':<20} {'Usuario':<14} {'Rol'}")
-        separador()
+        separador(48)
         for u in usuarios:
             print(f"  {u['id']:<4} {u['nombre']:<20} {u['usuario']:<14} {u['rol']}")
-        separador()
+        separador(48)
         print(f"  Total: {len(usuarios)} usuarios")
         print("=" * 48)
         input("  Presiona Enter para volver...")
@@ -141,10 +125,10 @@ class MenuAdmin:
         usuarios = get_todos()
         print("=" * 48)
         print("  ELIMINAR USUARIO")
-        separador()
+        separador(48)
         for i, u in enumerate(usuarios, 1):
             print(f"  {i:>2}. [{u['rol']:<8}] {u['nombre']}  (@{u['usuario']})")
-        separador()
+        separador(48)
         print("   0. Volver")
         print("=" * 48)
 
@@ -195,13 +179,13 @@ class MenuAdmin:
         productos = get_todos_productos()
         print("=" * 48)
         print("  PRODUCTOS")
-        separador()
+        separador(48)
         cat_actual = None
         for p in productos:
             cat = CATEGORIAS_LABEL.get(p["categoria"], p["categoria"])
             if cat != cat_actual:
                 if cat_actual:
-                    separador()
+                    separador(48)
                 print(f"  {cat.upper()}")
                 cat_actual = cat
             nombre = p["nombre"]
@@ -209,7 +193,7 @@ class MenuAdmin:
                 nombre += f" ({p['variante']})"
             estado = "OK" if p["disponible"] else "OFF"
             print(f"  {p['id']:>3}. {nombre:<32} ${p['precio']:.2f}  [{estado}]")
-        separador()
+        separador(48)
         print("=" * 48)
         input("  Presiona Enter para volver...")
 
@@ -218,14 +202,14 @@ class MenuAdmin:
         productos = get_todos_productos()
         print("=" * 48)
         print("  HABILITAR / DESHABILITAR PRODUCTO")
-        separador()
+        separador(48)
         for p in productos:
             nombre = p["nombre"]
             if p["variante"]:
                 nombre += f" ({p['variante']})"
             estado = "ON" if p["disponible"] else "OFF"
             print(f"  {p['id']:>3}. [{estado}] {nombre}")
-        separador()
+        separador(48)
         print("   0. Volver")
         print("=" * 48)
 
@@ -274,13 +258,13 @@ class MenuAdmin:
         ingredientes = get_ingredientes()
         print("=" * 48)
         print("  STOCK COMPLETO")
-        separador()
+        separador(48)
         print(f"  {'ID':<4} {'Ingrediente':<25} {'Stock':>6}  {'Mín':>5}")
-        separador()
+        separador(48)
         for ing in ingredientes:
-            icono = _icono_stock(ing["cantidad"], ing["minimo"])
+            icono = icono_stock(ing["cantidad"], ing["minimo"])
             print(f"  {ing['id']:<4} {ing['nombre']:<25} {ing['cantidad']:>6}  {ing['minimo']:>5}  {icono}")
-        separador()
+        separador(48)
         alertas = [i for i in ingredientes if i["cantidad"] <= i["minimo"]]
         if alertas:
             print(f"  {len(alertas)} ingrediente(s) con stock bajo.")
@@ -292,12 +276,12 @@ class MenuAdmin:
         alertas = get_alertas()
         print("=" * 48)
         print("  ALERTAS DE STOCK BAJO")
-        separador()
+        separador(48)
         if not alertas:
             print("  Sin alertas. Todo el stock está OK.")
         else:
             print(f"  {'ID':<4} {'Ingrediente':<25} {'Stock':>6}  {'Mín':>5}")
-            separador()
+            separador(48)
             for a in alertas:
                 print(f"  {a['id']:<4} {a['nombre']:<25} {a['cantidad']:>6}  {a['minimo']:>5}  ⚠")
         print("=" * 48)
@@ -308,13 +292,13 @@ class MenuAdmin:
         ingredientes = get_ingredientes()
         print("=" * 48)
         print("  AJUSTAR STOCK")
-        separador()
+        separador(48)
         print(f"  {'ID':<4} {'Ingrediente':<25} {'Stock':>6}  {'Mín':>5}")
-        separador()
+        separador(48)
         for ing in ingredientes:
-            icono = _icono_stock(ing["cantidad"], ing["minimo"])
+            icono = icono_stock(ing["cantidad"], ing["minimo"])
             print(f"  {ing['id']:<4} {ing['nombre']:<25} {ing['cantidad']:>6}  {ing['minimo']:>5}  {icono}")
-        separador()
+        separador(48)
         print("   0. Volver")
         print("=" * 48)
 
@@ -358,11 +342,11 @@ class MenuAdmin:
             resumen = get_resumen_ventas()
             print("=" * 48)
             print("  REPORTES DE VENTAS")
-            separador()
+            separador(48)
             print(f"  Total de ventas:     {resumen['total_ventas']}")
             print(f"  Recaudado total:     ${resumen['total_recaudado']:.2f}")
             print(f"  Recaudado hoy:       ${resumen['hoy']:.2f}")
-            separador()
+            separador(48)
             print("  1. Ver ventas de hoy")
             print("  2. Ver ventas por fecha")
             print("  0. Volver")
@@ -381,12 +365,12 @@ class MenuAdmin:
         limpiar()
         print("=" * 48)
         print(f"  {titulo}")
-        separador()
+        separador(48)
         if not ventas:
             print("  Sin ventas registradas.")
         else:
             for v in ventas:
-                hora = v["fecha"].split(" ")[-1][:5] if " " in v["fecha"] else v["fecha"]
+                hora = v["fecha"].strftime("%H:%M")
                 print(f"  Venta #{v['id']}  Orden #{v['orden_id']}  Mesa {v['mesa']}  ${v['total']:.2f}  {hora}")
                 items = get_items_venta(v["orden_id"])
                 for it in items:
@@ -394,7 +378,7 @@ class MenuAdmin:
                     if it["variante"]:
                         nombre += f" ({it['variante']})"
                     print(f"      {it['cantidad']}x  {nombre}")
-                separador()
+                separador(48)
             total = sum(v["total"] for v in ventas)
             print(f"  TOTAL: ${total:.2f}  ({len(ventas)} ventas)")
         print("=" * 48)
@@ -413,23 +397,5 @@ class MenuAdmin:
         ventas = get_ventas_por_fecha(fecha)
         self._mostrar_ventas(ventas, f"VENTAS DEL {fecha}")
 
-    # ══════════════════════════════════════════
-    #  CONTRASEÑA
-    # ══════════════════════════════════════════
     def _cambiar_contrasena(self):
-        limpiar()
-        print("=" * 48)
-        print("  CAMBIAR CONTRASEÑA")
-        print("=" * 48)
-        actual = input("  Contraseña actual  : ").strip()
-        nueva = input("  Nueva contraseña   : ").strip()
-        confirmar = input("  Confirmá la nueva  : ").strip()
-
-        if nueva != confirmar:
-            print("\n  Las contraseñas no coinciden.")
-            input("  Presiona Enter para volver...")
-            return
-
-        ok, msg = cambiar_contrasena(self.user["id"], actual, nueva)
-        print(f"\n  {msg}")
-        input("  Presiona Enter para continuar...")
+        cambiar_contrasena_ui(self.user, ancho=48)
