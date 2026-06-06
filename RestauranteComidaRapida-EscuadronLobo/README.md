@@ -1,3 +1,5 @@
+<img width="1915" height="821" alt="ChatGPT Image 5 jun 2026, 02_37_29 a m" src="https://github.com/user-attachments/assets/38d90915-0c84-46c5-b197-40c6098b6ed0" />
+
 # Restaurante Escuadrón Lobo
 
 Sistema de gestión para un restaurante de comida rápida, desarrollado en Python con PostgreSQL como base de datos. Permite administrar usuarios, menú, stock, pedidos y ventas con un flujo de trabajo diferenciado por rol: administrador, mozo, cocinero y cliente.
