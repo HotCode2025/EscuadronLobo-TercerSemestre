@@ -1,0 +1,272 @@
+@import url('https://fonts.googleapis.com/css?family=Poppins:200,300,400,500,600,700,800,900&display=swap');
+
+* {
+  font-family: 'Poppins', sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  overflow: hidden;
+}
+
+section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+}
+
+/* ---- Blobs de color de fondo ---- */
+section .color {
+  position: absolute;
+  filter: blur(100px);
+  border-radius: 50%;
+}
+
+section .color:nth-child(1) {
+  top: -200px;
+  right: -80px;
+  width: 500px;
+  height: 500px;
+  background: #7f5af0;
+}
+
+section .color:nth-child(2) {
+  bottom: -150px;
+  left: 50px;
+  width: 450px;
+  height: 450px;
+  background: #2cb67d;
+}
+
+section .color:nth-child(3) {
+  bottom: 60px;
+  right: 80px;
+  width: 300px;
+  height: 300px;
+  background: #ff6b6b;
+}
+
+/* ---- Box contenedor ---- */
+.box {
+  position: relative;
+}
+
+/* ---- Cuadros animados con GLOW resaltado ---- */
+.box .square {
+  position: absolute;
+  backdrop-filter: blur(4px);
+  border-radius: 10px;
+  animation: animate 8s ease-in-out infinite;
+  animation-delay: calc(-2s * var(--i));
+}
+
+.box .square:nth-child(1) {
+  top: -50px;
+  right: -60px;
+  width: 90px;
+  height: 90px;
+  background: rgba(127, 90, 240, 0.30);
+  border: 2px solid rgba(127, 90, 240, 0.85);
+  box-shadow: 0 0 20px rgba(127, 90, 240, 0.7),
+              0 0 40px rgba(127, 90, 240, 0.3),
+              inset 0 0 15px rgba(127, 90, 240, 0.2);
+}
+
+.box .square:nth-child(2) {
+  bottom: -50px;
+  left: -60px;
+  width: 70px;
+  height: 70px;
+  background: rgba(44, 182, 125, 0.30);
+  border: 2px solid rgba(44, 182, 125, 0.85);
+  box-shadow: 0 0 20px rgba(44, 182, 125, 0.7),
+              0 0 40px rgba(44, 182, 125, 0.3),
+              inset 0 0 15px rgba(44, 182, 125, 0.2);
+}
+
+.box .square:nth-child(3) {
+  top: 45%;
+  left: -75px;
+  width: 55px;
+  height: 55px;
+  background: rgba(255, 107, 107, 0.30);
+  border: 2px solid rgba(255, 107, 107, 0.85);
+  box-shadow: 0 0 20px rgba(255, 107, 107, 0.7),
+              0 0 40px rgba(255, 107, 107, 0.3),
+              inset 0 0 15px rgba(255, 107, 107, 0.2);
+}
+
+.box .square:nth-child(4) {
+  bottom: 50px;
+  right: -75px;
+  width: 75px;
+  height: 75px;
+  background: rgba(255, 210, 63, 0.30);
+  border: 2px solid rgba(255, 210, 63, 0.85);
+  box-shadow: 0 0 20px rgba(255, 210, 63, 0.7),
+              0 0 40px rgba(255, 210, 63, 0.3),
+              inset 0 0 15px rgba(255, 210, 63, 0.2);
+}
+
+.box .square:nth-child(5) {
+  top: -35px;
+  left: 70px;
+  width: 45px;
+  height: 45px;
+  background: rgba(44, 182, 125, 0.30);
+  border: 2px solid rgba(44, 182, 125, 0.85);
+  box-shadow: 0 0 16px rgba(44, 182, 125, 0.7),
+              0 0 32px rgba(44, 182, 125, 0.3),
+              inset 0 0 10px rgba(44, 182, 125, 0.2);
+}
+
+@keyframes animate {
+  0%, 100% {
+    transform: translateY(-35px) rotate(0deg);
+  }
+  50% {
+    transform: translateY(35px) rotate(8deg);
+  }
+}
+
+/* ---- Contenedor principal (glassmorphism) ---- */
+.conteiner {
+  position: relative;
+  width: 400px;
+  min-height: 400px;
+  background: rgba(255, 255, 255, 0.07);
+  border-radius: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(12px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+/* ---- Formulario ---- */
+.form {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  padding: 40px;
+}
+
+.form h2 {
+  position: relative;
+  color: #fff;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  margin-bottom: 40px;
+}
+
+.form h2::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: -10px;
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, #7f5af0, #2cb67d);
+  border-radius: 2px;
+}
+
+/* ---- Mensaje de feedback JS ---- */
+.mensaje {
+  font-size: 12px;
+  text-align: center;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  display: none;
+}
+
+.mensaje.success {
+  display: block;
+  background: rgba(44, 182, 125, 0.2);
+  color: #a7f3d0;
+  border: 1px solid rgba(44, 182, 125, 0.4);
+}
+
+.mensaje.error {
+  display: block;
+  background: rgba(255, 107, 107, 0.2);
+  color: #fecaca;
+  border: 1px solid rgba(255, 107, 107, 0.4);
+}
+
+/* ---- Inputs ---- */
+.form .inputBox {
+  width: 100%;
+  margin-top: 20px;
+}
+
+.form .inputBox input {
+  width: 100%;
+  background: rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  outline: none;
+  padding: 10px 20px;
+  border-radius: 35px;
+  font-size: 16px;
+  letter-spacing: 1px;
+  color: #fff;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.10);
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.form .inputBox input::placeholder {
+  color: rgba(255, 255, 255, 0.60);
+}
+
+.form .inputBox input:focus {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(127, 90, 240, 0.85);
+}
+
+.form .inputBox input[type="submit"] {
+  background: linear-gradient(90deg, #7f5af0, #2cb67d);
+  border: none;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: 1px;
+  transition: opacity 0.2s, transform 0.1s;
+}
+
+.form .inputBox input[type="submit"]:hover {
+  opacity: 0.88;
+  transform: scale(1.02);
+}
+
+/* ---- Barra de fortaleza de contraseña ---- */
+.strength-bar {
+  height: 3px;
+  border-radius: 2px;
+  margin-top: 6px;
+  transition: width 0.3s, background 0.3s;
+  width: 0;
+}
+
+/* ---- Links de pie ---- */
+.forget {
+  margin-top: 8px;
+  color: rgba(255, 255, 255, 0.70);
+  font-size: 13px;
+}
+
+.forget a {
+  color: #a78bfa;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.forget a:hover {
+  color: #c4b5fd;
+}
