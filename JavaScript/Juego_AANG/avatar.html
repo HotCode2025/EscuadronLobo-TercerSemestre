@@ -29,8 +29,8 @@
 
     <section id="seleccionar-ataque">
         <h2>Elige tu ataque</h2> <!--Se puede utilizar varias veces-->
-        <p>Tu personaje <span id="personaje-jugador"></span> tiene <span>3</span> vidas</p> <!--Pero esto debe ser dinámico, necesitamos que cambie-->
-        <p>El personaje <span id="personaje-enemigo"></span> del enemigo tiene <span>3</span> vidas</p> <!--Con la etiqueta spam vamos a modificar el 3 con JS-->
+        <p>Tu personaje <span id="personaje-jugador"></span> tiene <span id="vidas-jugador">3</span> vidas</p> <!--Pero esto debe ser dinámico, necesitamos que cambie-->
+        <p>El personaje <span id="personaje-enemigo"></span> del enemigo tiene <span id="vidas-enemigo">3</span> vidas</p> <!--Con la etiqueta spam vamos a modificar el 3 con JS-->
         <p>
             <button id="boton-punio">Punio 👊</button>
             <button id="boton-patada">Patada 🦵</button>
@@ -49,17 +49,47 @@
     <section id="reglas">
         <h3>Ayuda del juego</h3>
         <details>
-            <summary>📜 Reglas del juego</summary>
-                <p>1️⃣ Primero debes seleccionar un personaje.</p>
-                <p>2️⃣ Tú y el enemigo comienzan con 3 vidas.</p>
-                <p>3️⃣ En cada ronda ambos atacan.</p>
-                <p>👊 Puño vence a 🧹 Barrida.</p>
-                <p>🦵 Patada vence a 👊 Puño.</p>
-                <p>🧹 Barrida vence a 🦵 Patada.</p>
-                <p>Si ambos usan el mismo ataque, la ronda termina en empate.</p>
+            <summary id="mostrar-reglas">📜 Reglas del juego</summary> <!-- Muestra u oculta las reglas del juego -->
+                <ul style="list-style-type: square;">                    
+                    <h4>1️⃣ Seleccion de Personajes:</h4>                    
+                    <ul>
+                        <li>El jugador elige uno de los cuatro personajes: Zuko, Katara, Aang o Toph.</li>
+                        <li>El enemigo es asignado aleatoriamente de entre estos personajes.</li>
+                    </ul>
+                    <h4>2️⃣ Ataques:</h4>
+                    <ul>
+                        <li>El jugador elige entre tres ataques: Puño, Patada o Barrida.</li>
+                        <li>El enemigo elige su ataque aleatoriamente.</li>
+                    </ul>
+                    <h4>3️⃣ Reglas del Combate:</h4>
+                    <ul>
+                        <li>Si ambos usan el mismo ataque, la ronda termina en empate.</li>
+                        <li>Victoria del Jugador:</li>
+                        <ul>
+                            <li>👊 Puño vence a 🧹 Barrida.</li>
+                            <li>🦵 Patada vence a 👊 Puño.</li>
+                            <li>🧹 Barrida vence a 🦵 Patada.</li>                          
+                        </ul>
+                        <li>Derrota del Jugador: Cualquier otra combinación</li>
+                    </ul>
+                    <h4>4️⃣ Vidas:</h4>
+                    <ul>
+                        <li>Ambos comienzan con 3 vidas</li>
+                        <li>Perder un combate disminuye una vida</li>
+                    </ul>
+                    <h4>5️⃣ Fin del Juego:</h4>
+                    <ul>
+                        <li>Victoria del Jugador: Enemigo pierde todas sus vidas.</li>
+                        <li>Derrota del Jugador: Jugador pierde todas sus vidas.</li>
+                        <li>Se deshabilitan los botones de ataque y se muestra un botón para reiniciar el juego</li>
+                    </ul>
+                    <h4>6️⃣ Reinicio del Juego:</h4>
+                    <ul>
+                        <li>El jugador puede reiniciar el juego, recargando la página.</li>
+                    </ul>                    
+                </ul>
         </details>
     </section>
-
     <script src="./js/avatar.js"></script>
 </body>
 </html>         
