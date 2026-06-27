@@ -1,4 +1,10 @@
+"""
+Módulo de Base de Datos:
+Configura las credenciales de conexión con PostgreSQL, define funciones auxiliares
+para ejecutar consultas SQL e inicializa las tablas del sistema del restaurante.
+"""
 import psycopg
+
 from psycopg.rows import dict_row
 
 import os
@@ -7,22 +13,25 @@ DB_CONFIG = {
     "host":     os.environ.get("PGHOST",     "localhost"),
     "dbname":   os.environ.get("PGDATABASE", "restaurante_escuadronlobo"),
     "user":     os.environ.get("PGUSER",     "postgres"),
-    "password": os.environ.get("PGPASSWORD", "1234"),
+    "password": os.environ.get("PGPASSWORD", "admin"),
     "port":     int(os.environ.get("PGPORT", "5432")),
 }
 
 
 def get_connection():
+    """Establece y retorna una conexión activa con la base de datos PostgreSQL."""
     return psycopg.connect(**DB_CONFIG)
 
 
 def execute(conn, sql, params=()):
+    """Crea un cursor que devuelve filas como diccionarios y ejecuta la consulta SQL."""
     cur = conn.cursor(row_factory=dict_row)
     cur.execute(sql, params)
     return cur
 
 
 def init_db():
+    """Inicializa la base de datos creando las tablas del sistema si no existen."""
     conn = get_connection()
     cur = conn.cursor()
 
