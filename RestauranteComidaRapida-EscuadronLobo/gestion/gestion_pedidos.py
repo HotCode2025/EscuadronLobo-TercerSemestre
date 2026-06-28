@@ -93,13 +93,13 @@ def cambiar_estado(orden_id, nuevo_estado):
 def marcar_listo(orden_id):
     # Marca una orden como lista, descuenta los ingredientes del stock y comprueba si algún ingrediente quedó bajo el mínimo.
     conn = get_connection()
-
+    # busca los ítems de la orden y, para cada uno, su receta
     items = execute(
         conn,
         "SELECT producto_id, cantidad FROM orden_items WHERE orden_id = %s",
         (orden_id,),
     ).fetchall()
-    # busca los ítems de la orden y, para cada uno, su receta
+    # Itera sobre cada producto de la orden para ajustar el stock
     for item in items:
         ingredientes = execute(
             conn,
@@ -110,13 +110,14 @@ def marcar_listo(orden_id):
         for ing in ingredientes:
             execute(
                 conn,
-                "UPDATE ingredientes SET cantidad = GREATEST(0, cantidad - %s) WHERE id = %s", # el mismo patrón de GREATEST que usa Orlando para reponer stock, pero acá restando
+                "UPDATE ingredientes SET cantidad = GREATEST(0, cantidad - %s) WHERE id = %s", 
                 (ing["cantidad"] * item["cantidad"], ing["ingrediente_id"]),
             )
-
-    execute(conn, "UPDATE ordenes SET estado = 'listo' WHERE id = %s", (orden_id,)) #cambia el estado de la orden a 'listo'
+    # Cambia el estado de la orden a 'listo'
+    execute(conn, "UPDATE ordenes SET estado = 'listo' WHERE id = %s", (orden_id,)) 
     conn.commit()
-    # al final consulta qué ingredientes quedaron en alerta (WHERE cantidad <= minimo) para devolver esa lista — así el cocinero se entera al instante si algo se está por terminar.
+    # Consulta qué ingredientes quedaron en alerta (WHERE cantidad <= minimo) para devolver esa lista — 
+    # así el cocinero se entera al instante si algo se está por terminar.
     alertas = execute(
         conn,
         "SELECT nombre, cantidad, minimo FROM ingredientes WHERE cantidad <= minimo", 
@@ -132,7 +133,8 @@ def entregar_orden(orden_id):
     total = execute(
         conn, "SELECT total FROM ordenes WHERE id = %s", (orden_id,)
     ).fetchone()["total"]
-    # inserta el registro en ventas con el total de la orden — este es el puente exacto con la parte de Juan: acá nace cada venta que después él va a reportar
+    # inserta el registro en ventas con el total de la orden — 
+    # este es el puente exacto con la parte de Juan: acá nace cada venta que después él va a reportar
     execute(conn, "INSERT INTO ventas (orden_id, total) VALUES (%s,%s)", (orden_id, total))
     conn.commit()
     conn.close()    
@@ -150,7 +152,8 @@ def mesa_tiene_orden_activa(mesa):
 
 def get_estado_mesas(total_mesas=6):
     # Consulta y retorna el estado de ocupación y preparación de cada una de las mesas
-    # recorre las 6 mesas y, para cada una, consulta si tiene una orden activa — la función que arma la pantalla de "estado de mesas" que va a mostrar Valentín
+    # recorre las 6 mesas y, para cada una, consulta si tiene una orden activa — 
+    # la función que arma la pantalla de "estado de mesas" que va a mostrar Valentín
     conn = get_connection()
     mesas = []
     for num in range(1, total_mesas + 1):
@@ -168,7 +171,7 @@ def get_estado_mesas(total_mesas=6):
 
 def cancelar_orden(orden_id):
     # Elimina físicamente la orden y todos sus ítems asociados de la base de datos
-    # borra primero orden_items y después ordenes — el orden importa, porque orden_items tiene una FOREIGN KEY hacia ordenes y PostgreSQL no deja borrar el padre si quedan hijos.
+    # borra primero orden_items y después ordenes — 
     conn = get_connection()
     execute(conn, "DELETE FROM orden_items WHERE orden_id = %s", (orden_id,))
     execute(conn, "DELETE FROM ordenes WHERE id = %s", (orden_id,))
@@ -218,7 +221,6 @@ def get_orden_por_id(orden_id):
     row = execute(conn, "SELECT * FROM ordenes WHERE id = %s", (orden_id,)).fetchone()
     conn.close()
     return dict(row) if row else None
-
 
 def get_ordenes_por_estado(estado):
     # Obtiene todas las órdenes registradas filtradas por un estado específico.
