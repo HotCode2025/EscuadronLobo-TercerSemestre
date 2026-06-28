@@ -15,7 +15,7 @@ def get_productos_por_categoria(categoria):
     return [dict(r) for r in rows]
 
 def crear_orden(mesa, items, mozo_id=None, cliente_id=None):   
-    # Calcula el total sumando los subtotales en Python,
+    # Calcula el total sumando los subtotales
     total = sum(i["subtotal"] for i in items) 
     conn = get_connection()
 
@@ -39,71 +39,7 @@ def crear_orden(mesa, items, mozo_id=None, cliente_id=None):
     conn.close()
     return orden_id
 
-def get_ordenes_activas():
-    # Devuelve una lista con todas las ordenes donde estado NO sea 'entregado'
-    conn = get_connection()
-    rows = execute(
-        conn,
-        "SELECT * FROM ordenes WHERE estado != 'entregado' ORDER BY creado_en",
-    ).fetchall()
-    conn.close()
-    return [dict(r) for r in rows]
-
-
-def get_ordenes_listas():
-    # Devuelve una lista con todas las ordenes donde estado sea 'listo'
-    conn = get_connection()
-    rows = execute(
-        conn,
-        "SELECT * FROM ordenes WHERE estado = 'listo' ORDER BY creado_en",
-    ).fetchall()
-    conn.close()
-    return [dict(r) for r in rows]
-
-
-def get_items_orden(orden_id):
-    # Devuelve el detalle de productos, cantidades y subtotales asociados a una orden
-    conn = get_connection()
-    rows = execute(
-        conn,
-        """
-        SELECT oi.cantidad, oi.subtotal, p.nombre, p.variante
-        FROM orden_items oi
-        JOIN productos p ON p.id = oi.producto_id
-        WHERE oi.orden_id = %s
-        """,
-        (orden_id,),
-    ).fetchall()
-    conn.close()
-    return [dict(r) for r in rows]
-
-
-def entregar_orden(orden_id):
-    # Marca la orden como 'entregada' y registra su total en la tabla de ventas
-    conn = get_connection()
-    execute(conn, "UPDATE ordenes SET estado = 'entregado' WHERE id = %s", (orden_id,))
-    total = execute(
-        conn, "SELECT total FROM ordenes WHERE id = %s", (orden_id,)
-    ).fetchone()["total"]
-    # inserta el registro en ventas con el total de la orden — este es el puente exacto con la parte de Juan: acá nace cada venta que después él va a reportar
-    execute(conn, "INSERT INTO ventas (orden_id, total) VALUES (%s,%s)", (orden_id, total))
-    conn.commit()
-    conn.close()
-
-
-def mesa_tiene_orden_activa(mesa):
-    # Verifica si una mesa en particular tiene algún pedido en proceso o no entregado
-    conn = get_connection()
-    row = execute(
-        conn,
-        "SELECT id FROM ordenes WHERE mesa = %s AND estado != 'entregado'",
-        (mesa,),
-    ).fetchone()
-    conn.close()
-    return row is not None
-
-
-def verificar_stock(items): # La función más elaborada del módulo. Vale la pena explicarla paso a paso:
+def verifica_stock(items): 
     # Se crea un diccionario 'necesario' para llevar la cuenta de cuánto stock se necesita en total
     conn = get_connection()
     necesario = {}
@@ -145,68 +81,6 @@ def verificar_stock(items): # La función más elaborada del módulo. Vale la pe
     # Esto es lo que evita que se cree un pedido imposible de preparar — se valida antes de tocar la tabla 'ordenes'
     conn.close()
     return faltantes
-
-
-def get_estado_mesas(total_mesas=6):
-    # Consulta y retorna el estado de ocupación y preparación de cada una de las mesas
-    # recorre las 6 mesas y, para cada una, consulta si tiene una orden activa — la función que arma la pantalla de "estado de mesas" que va a mostrar Valentín
-    conn = get_connection()
-    mesas = []
-    for num in range(1, total_mesas + 1):
-        orden = execute(
-            conn,
-            "SELECT id, estado FROM ordenes WHERE mesa = %s AND estado != 'entregado'",
-            (num,),
-        ).fetchone()
-        if orden:
-            mesas.append({"mesa": num, "libre": False, "orden_id": orden["id"], "estado": orden["estado"]})
-        else:
-            mesas.append({"mesa": num, "libre": True, "orden_id": None, "estado": None})
-    conn.close()
-    return mesas
-
-
-def cancelar_orden(orden_id):
-    # Elimina físicamente la orden y todos sus ítems asociados de la base de datos
-    # borra primero orden_items y después ordenes — el orden importa, porque orden_items tiene una FOREIGN KEY hacia ordenes y PostgreSQL no deja borrar el padre si quedan hijos.
-    conn = get_connection()
-    execute(conn, "DELETE FROM orden_items WHERE orden_id = %s", (orden_id,))
-    execute(conn, "DELETE FROM ordenes WHERE id = %s", (orden_id,))
-    conn.commit()
-    conn.close()
-
-# get_ordenes_por_estado, get_ordenes_cliente, get_orden_por_id se reutilizan en varios módulos (cliente, cocinero y mozo).
-def get_orden_por_id(orden_id):
-    # Obtiene una orden de la base de datos filtrada por su identificador único (ID)
-    conn = get_connection()
-    row = execute(conn, "SELECT * FROM ordenes WHERE id = %s", (orden_id,)).fetchone()
-    conn.close()
-    return dict(row) if row else None
-
-
-def get_ordenes_por_estado(estado):
-    # Obtiene todas las órdenes registradas filtradas por un estado específico.
-    conn = get_connection()
-    rows = execute(
-        conn,
-        "SELECT * FROM ordenes WHERE estado = %s ORDER BY creado_en",
-        (estado,),
-    ).fetchall()
-    conn.close()
-    return [dict(r) for r in rows]
-
-
-def get_ordenes_cliente(cliente_id):
-    # Obtiene el historial completo de órdenes de un cliente ordenadas por fecha descendente.
-    conn = get_connection()
-    rows = execute(
-        conn,
-        "SELECT * FROM ordenes WHERE cliente_id = %s ORDER BY creado_en DESC",
-        (cliente_id,),
-    ).fetchall()
-    conn.close()
-    return [dict(r) for r in rows]
-
 
 def cambiar_estado(orden_id, nuevo_estado):
     # Actualiza el estado de preparación o entrega de una orden.
@@ -250,3 +124,124 @@ def marcar_listo(orden_id):
     conn.close()
 
     return [dict(a) for a in alertas]
+
+def entregar_orden(orden_id):
+    # Marca la orden como 'entregada' y registra su total en la tabla de ventas
+    conn = get_connection()
+    execute(conn, "UPDATE ordenes SET estado = 'entregado' WHERE id = %s", (orden_id,))
+    total = execute(
+        conn, "SELECT total FROM ordenes WHERE id = %s", (orden_id,)
+    ).fetchone()["total"]
+    # inserta el registro en ventas con el total de la orden — este es el puente exacto con la parte de Juan: acá nace cada venta que después él va a reportar
+    execute(conn, "INSERT INTO ventas (orden_id, total) VALUES (%s,%s)", (orden_id, total))
+    conn.commit()
+    conn.close()    
+
+def mesa_tiene_orden_activa(mesa):
+    # Verifica si una mesa en particular tiene algún pedido en proceso o no entregado
+    conn = get_connection()
+    row = execute(
+        conn,
+        "SELECT id FROM ordenes WHERE mesa = %s AND estado != 'entregado'",
+        (mesa,),
+    ).fetchone()
+    conn.close()
+    return row is not None
+
+def get_estado_mesas(total_mesas=6):
+    # Consulta y retorna el estado de ocupación y preparación de cada una de las mesas
+    # recorre las 6 mesas y, para cada una, consulta si tiene una orden activa — la función que arma la pantalla de "estado de mesas" que va a mostrar Valentín
+    conn = get_connection()
+    mesas = []
+    for num in range(1, total_mesas + 1):
+        orden = execute(
+            conn,
+            "SELECT id, estado FROM ordenes WHERE mesa = %s AND estado != 'entregado'",
+            (num,),
+        ).fetchone()
+        if orden:
+            mesas.append({"mesa": num, "libre": False, "orden_id": orden["id"], "estado": orden["estado"]})
+        else:
+            mesas.append({"mesa": num, "libre": True, "orden_id": None, "estado": None})
+    conn.close()
+    return mesas
+
+def cancelar_orden(orden_id):
+    # Elimina físicamente la orden y todos sus ítems asociados de la base de datos
+    # borra primero orden_items y después ordenes — el orden importa, porque orden_items tiene una FOREIGN KEY hacia ordenes y PostgreSQL no deja borrar el padre si quedan hijos.
+    conn = get_connection()
+    execute(conn, "DELETE FROM orden_items WHERE orden_id = %s", (orden_id,))
+    execute(conn, "DELETE FROM ordenes WHERE id = %s", (orden_id,))
+    conn.commit()
+    conn.close()
+
+def get_ordenes_activas():
+    # Devuelve una lista con todas las ordenes donde estado NO sea 'entregado'
+    conn = get_connection()
+    rows = execute(
+        conn,
+        "SELECT * FROM ordenes WHERE estado != 'entregado' ORDER BY creado_en",
+    ).fetchall()
+    conn.close()
+    return [dict(r) for r in rows]
+
+def get_ordenes_listas():
+    # Devuelve una lista con todas las ordenes donde estado sea 'listo'
+    conn = get_connection()
+    rows = execute(
+        conn,
+        "SELECT * FROM ordenes WHERE estado = 'listo' ORDER BY creado_en",
+    ).fetchall()
+    conn.close()
+    return [dict(r) for r in rows]
+
+def get_items_orden(orden_id):
+    # Devuelve el detalle de productos, cantidades y subtotales asociados a una orden
+    conn = get_connection()
+    rows = execute(
+        conn,
+        """
+        SELECT oi.cantidad, oi.subtotal, p.nombre, p.variante
+        FROM orden_items oi
+        JOIN productos p ON p.id = oi.producto_id
+        WHERE oi.orden_id = %s
+        """,
+        (orden_id,),
+    ).fetchall()
+    conn.close()
+    return [dict(r) for r in rows]
+
+# get_ordenes_por_estado, get_ordenes_cliente, get_orden_por_id se reutilizan en varios módulos (cliente, cocinero y mozo).
+def get_orden_por_id(orden_id):
+    # Obtiene una orden de la base de datos filtrada por su identificador único (ID)
+    conn = get_connection()
+    row = execute(conn, "SELECT * FROM ordenes WHERE id = %s", (orden_id,)).fetchone()
+    conn.close()
+    return dict(row) if row else None
+
+
+def get_ordenes_por_estado(estado):
+    # Obtiene todas las órdenes registradas filtradas por un estado específico.
+    conn = get_connection()
+    rows = execute(
+        conn,
+        "SELECT * FROM ordenes WHERE estado = %s ORDER BY creado_en",
+        (estado,),
+    ).fetchall()
+    conn.close()
+    return [dict(r) for r in rows]
+
+
+def get_ordenes_cliente(cliente_id):
+    # Obtiene el historial completo de órdenes de un cliente ordenadas por fecha descendente.
+    conn = get_connection()
+    rows = execute(
+        conn,
+        "SELECT * FROM ordenes WHERE cliente_id = %s ORDER BY creado_en DESC",
+        (cliente_id,),
+    ).fetchall()
+    conn.close()
+    return [dict(r) for r in rows]
+
+
+
