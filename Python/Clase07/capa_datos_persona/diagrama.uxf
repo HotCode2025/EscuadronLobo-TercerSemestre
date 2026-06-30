@@ -1,0 +1,45 @@
+<diagram program="umletino" version="15.1"><zoom_level>10</zoom_level><help_text>Space for diagram notes</help_text><element><id>UMLClass</id><coordinates><x>20</x><y>140</y><w>210</w><h>190</h></coordinates><panel_attributes>conexion
+--
+-DATABASE: String
+-USERNAME String
+-PASSWORD: String
+-DB PORT: String
+-HOST: String
+-conexion:  String
+-cursor:  String
+--
++obetenerConexion(ds): Connection
++obetenerCursor(ds): Cursor
++cerrar(ds)
+--
+Responsibilities
+Administrar la conexion a la base de datos</panel_attributes><additional_attributes></additional_attributes></element><element><id>Relation</id><coordinates><x>90</x><y>320</y><w>30</w><h>240</h></coordinates><panel_attributes></panel_attributes><additional_attributes>10;10;10;220</additional_attributes></element><element><id>Relation</id><coordinates><x>90</x><y>520</y><w>90</w><h>40</h></coordinates><panel_attributes></panel_attributes><additional_attributes>70;20;10;20</additional_attributes></element><element><id>Relation</id><coordinates><x>420</x><y>320</y><w>30</w><h>240</h></coordinates><panel_attributes></panel_attributes><additional_attributes>10;220;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>360</x><y>520</y><w>90</w><h>40</h></coordinates><panel_attributes></panel_attributes><additional_attributes>10;20;70;20</additional_attributes></element><element><id>Relation</id><coordinates><x>90</x><y>530</y><w>90</w><h>30</h></coordinates><panel_attributes>lt=&lt;&lt;.</panel_attributes><additional_attributes>70;10;10;10</additional_attributes></element><element><id>Relation</id><coordinates><x>420</x><y>320</y><w>30</w><h>90</h></coordinates><panel_attributes>lt=&lt;&lt;.</panel_attributes><additional_attributes>10;10;10;70</additional_attributes></element><element><id>UMLClass</id><coordinates><x>300</x><y>150</y><w>210</w><h>190</h></coordinates><panel_attributes>Persona
+
+--
+-id_persona: String
+-nombre: String
+-apellido: String
+-email: String
+--
++_string_(): String
++metodo Get/Set de cada atributo
+--
+Responsibilities
+Crea objetos de la entiodad de
+Persona 
+</panel_attributes><additional_attributes></additional_attributes></element><element><id>UMLClass</id><coordinates><x>160</x><y>460</y><w>210</w><h>220</h></coordinates><panel_attributes>PersonaDao
+--
+-SELECCIONAR: String
+-INSERTAR: String
+-ACTUALIZAR: String
+-ELIMINAR: String
+-
++seleccionar(ds)
++insertar:(ds, persona)
++actualizar:(ds, persona)
++eliminar:(ds, persona)
+--
+Responsibilities
+Realizar las operaciones 
+sobre la base de datos de la entidad 
+Persona</panel_attributes><additional_attributes></additional_attributes></element></diagram>

@@ -1,0 +1,48 @@
+06:29:47 PM:DEBUG [logger_base.py:18] Mensaje a nivel debug
+06:29:47 PM:INFO [logger_base.py:19] Mensaje a nivel info
+06:29:47 PM:WARNING [logger_base.py:20] Mensaje a nivel warning
+06:29:47 PM:ERROR [logger_base.py:21] Mensaje a nivel error
+06:29:47 PM:CRITICAL [logger_base.py:22] Mensaje a nivel critical
+08:18:14 PM:DEBUG [logger_base.py:16] Mensaje a nivel debug
+08:18:14 PM:INFO [logger_base.py:17] Mensaje a nivel info
+08:18:14 PM:WARNING [logger_base.py:18] Mensaje a nivel warning
+08:18:14 PM:ERROR [logger_base.py:19] Mensaje a nivel error
+08:18:14 PM:CRITICAL [logger_base.py:20] Mensaje a nivel critical
+09:18:55 PM:DEBUG [logger_base.py:16] Mensaje a nivel debug
+09:18:55 PM:INFO [logger_base.py:17] Mensaje a nivel info
+09:18:55 PM:WARNING [logger_base.py:18] Mensaje a nivel warning
+09:18:55 PM:ERROR [logger_base.py:19] Mensaje a nivel error
+09:18:55 PM:CRITICAL [logger_base.py:20] Mensaje a nivel critical
+09:00:42 AM:DEBUG [Persona.py:55] 
+            Id Persona: 1,
+            Nombre: Juan,
+            Apellido: Perez,
+            Email: juan.perez@example.com
+        09:13:25 AM:DEBUG [Persona.py:55] 
+            Id Persona: 1,
+            Nombre: Juan,
+            Apellido: Perez,
+            Email: juan.perez@example.com
+        
+09:13:25 AM:DEBUG [Persona.py:57] 
+            Id Persona: None,
+            Nombre: José,
+            Apellido: Paz,
+            Email: j.paz@example.com
+        
+09:13:25 AM:DEBUG [Persona.py:59] 
+            Id Persona: 1,
+            Nombre: None,
+            Apellido: None,
+            Email: None
+        
+12:08:38 PM:ERROR [conexion.py:30] Error al obtener conexion: connection to server at "127.0.0.1", port 5432 failed: FATAL:  database "test.db" does not exist
+
+06:49:54 PM:ERROR [conexion.py:28] Error al obtener conexion: connection to server at "127.0.0.1", port 5432 failed: FATAL:  database "test.db" does not exist
+
+09:07:45 PM:ERROR [conexion.py:28] Ocurrió un error: connection to server at "127.0.0.1", port 5432 failed: FATAL:  database "test.db" does not exist
+
+09:09:12 PM:DEBUG [conexion.py:26] Conexión exitosa: <connection object at 0x0000024E945AD7A0; dsn: 'user=postgres password=xxx dbname=test_bd host=127.0.0.1 port=5432', closed: 0>
+09:39:27 PM:DEBUG [conexion.py:26] Conexión exitosa: <connection object at 0x0000025BD81CD7A0; dsn: 'user=postgres password=xxx dbname=test_bd host=127.0.0.1 port=5432', closed: 0>
+10:01:43 PM:DEBUG [conexion.py:26] Conexión exitosa: <connection object at 0x000001906131D7A0; dsn: 'user=postgres password=xxx dbname=test_bd host=127.0.0.1 port=5432', closed: 0>
+10:01:43 PM:DEBUG [conexion.py:39] Se abrió corectamente el cursor: <cursor object at 0x0000019061374D60; closed: 0>
