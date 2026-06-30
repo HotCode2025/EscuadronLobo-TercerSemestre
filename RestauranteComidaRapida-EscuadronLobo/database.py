@@ -8,11 +8,10 @@ import os
 import psycopg
 
 from psycopg.rows import dict_row
-
 # Configuración de la conexión.
 # Los parámetros se obtienen desde variables de entorno,
 # utilizando valores por defecto cuando no están definidos.
-DB_CONFIG = {
+DB_C0ONFIG = {
     "host":     os.environ.get("PGHOST",     "localhost"),
     "dbname":   os.environ.get("PGDATABASE", "restaurante_escuadronlobo"),
     "user":     os.environ.get("PGUSER",     "postgres"),
